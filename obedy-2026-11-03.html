@@ -2,18 +2,21 @@
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: restaurace pod sebou; dish = karta na telefonu, řádek tabulky od 760px */
+/* Layout: ovládání nahoře, pod ním restaurace (nebo jeden seznam všech jídel); dish = karta na telefonu, řádek tabulky od 760px */
 :root{
   --bg:#f3f5f2; --surface:#ffffff; --fg:#1d2a24; --muted:#5b6b62; --line:#dde3dd;
   --best:#1f7a4d; --best-bg:#e3f3ea; --fish:#2b6cb0; --fish-bg:#e4eef9; --soup:#9a6b12; --soup-bg:#f6ecd6;
+  --on:#1d2a24; --on-fg:#f3f5f2;
   --f-body:'Figtree',system-ui,sans-serif; --f-num:'IBM Plex Mono',ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121a16; --surface:#1b2520; --fg:#e8eee9; --muted:#9bab9f; --line:#2c3a33;
-  --best:#5fd197; --best-bg:#163626; --fish:#7db3ee; --fish-bg:#172a40; --soup:#e3b55a; --soup-bg:#3a2f14; color-scheme:dark}}
+  --best:#5fd197; --best-bg:#163626; --fish:#7db3ee; --fish-bg:#172a40; --soup:#e3b55a; --soup-bg:#3a2f14;
+  --on:#e8eee9; --on-fg:#121a16; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121a16; --surface:#1b2520; --fg:#e8eee9; --muted:#9bab9f; --line:#2c3a33;
-  --best:#5fd197; --best-bg:#163626; --fish:#7db3ee; --fish-bg:#172a40; --soup:#e3b55a; --soup-bg:#3a2f14; color-scheme:dark}
+  --best:#5fd197; --best-bg:#163626; --fish:#7db3ee; --fish-bg:#172a40; --soup:#e3b55a; --soup-bg:#3a2f14;
+  --on:#e8eee9; --on-fg:#121a16; color-scheme:dark}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.4;
   padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
 main{max-width:980px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
@@ -21,26 +24,48 @@ h1{font-size:1.6rem;margin:0;text-wrap:balance}
 .sub{color:var(--muted);margin:4px 0 0;font-size:.9rem}
 .legend{display:flex;flex-wrap:wrap;gap:8px;font-size:.8rem}
 .chip{padding:2px 8px;border-radius:99px;background:var(--surface);border:1px solid var(--line)}
+button,select,input{font:inherit;color:inherit}
+button:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--best);outline-offset:2px}
+
+.controls{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:64px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:99px;overflow:hidden}
+.seg button{border:0;background:transparent;padding:5px 12px;cursor:pointer;font-size:.85rem}
+.seg button[aria-pressed="true"]{background:var(--on);color:var(--on-fg)}
+.f{border:1px solid var(--line);background:transparent;border-radius:99px;padding:4px 10px;cursor:pointer;font-size:.85rem}
+.f[aria-pressed="true"]{background:var(--on);color:var(--on-fg);border-color:var(--on)}
+select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:.85rem;max-width:100%}
+input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
+.kv{font-family:var(--f-num);font-size:.85rem;min-width:72px}
+.link{border:0;background:none;padding:0;color:var(--muted);text-decoration:underline;cursor:pointer;font-size:.8rem}
+.count{font-size:.8rem;color:var(--muted)}
+
 .rest{background:var(--surface);border:1px solid var(--line);border-radius:12px;overflow:hidden;min-width:0}
 .rest header{padding:12px 14px;border-bottom:1px solid var(--line)}
 .rest h2{margin:0;font-size:1.05rem}
 .addr{color:var(--muted);font-size:.8rem}
 .tip{padding:8px 14px;font-size:.85rem;background:var(--best-bg);color:var(--best)}
+.empty{padding:10px 14px;font-size:.85rem;color:var(--muted)}
+.hid{padding:6px 14px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--line)}
 .dish{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 14px;border-top:1px solid var(--line)}
-.dish:first-of-type{border-top:0}
+.cols+.dish{border-top:0}
 .name{font-weight:600;min-width:0}
-.price{font-family:var(--f-num);font-size:.85rem;color:var(--muted);text-align:right}
-.m{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 12px;font-family:var(--f-num);font-size:.8rem;color:var(--muted)}
+.from{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.price{font-family:var(--f-num);font-size:.85rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
+.m{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 12px;font-family:var(--f-num);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .m b{color:var(--fg);font-weight:500}
 .m span::before{content:attr(data-l)" ";font-family:var(--f-body);font-size:.72rem}
 .best{background:var(--best-bg)} .best .name{color:var(--best)}
 .fish .name{color:var(--fish)} .soup .name{color:var(--soup)}
 .note{font-size:.8rem;color:var(--muted)}
 .note a{color:inherit}
+.cols button{border:0;background:none;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;text-align:inherit}
+.cols button[aria-pressed="true"]{color:var(--fg);font-weight:700}
 @media(min-width:760px){
-  .cols,.dish{display:grid;grid-template-columns:minmax(0,1fr) 70px 70px 60px 60px 60px;gap:0 8px;align-items:baseline}
+  .cols,.dish{display:grid;grid-template-columns:minmax(0,1fr) 72px 56px 48px 48px 48px 72px;gap:0 8px;align-items:baseline}
   .cols{padding:6px 14px;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line)}
-  .cols span:nth-child(n+2){text-align:right}
+  .cols > *:nth-child(n+2){text-align:right}
   .m{display:contents}
   .price{order:2}.m span{text-align:right;order:3}
   .m span::before{content:none}
@@ -49,84 +74,217 @@ h1{font-size:1.6rem;margin:0;text-wrap:balance}
 @media(max-width:759px){.cols{display:none}}
 </style>
 <main>
-<div><h1>Obědy Zlín · úterý 3. 11. 2026</h1>
-<p class="sub">Pořadí podle polohy: Po–St Vavrečkova 7074, Čt–Pá Podlesí 5375. Dnes úterý, kancelář.</p></div>
-<div class="legend"><span class="chip">✅ nejlepší volba</span><span class="chip">🥣 polévka</span><span class="chip">🐟 ryba</span><span class="chip">🥩 maso</span><span class="chip">B bílkoviny · S sacharidy · T tuky (g)</span></div>
+<div><h1 id="h1">Obědy Zlín</h1>
+<p class="sub" id="sub"></p></div>
+
+<div class="controls" role="group" aria-label="Třídění a filtry">
+  <div class="row"><span class="lbl">Zobrazit</span>
+    <span class="seg"><button type="button" id="v-rest" data-view="rest">Podle restaurací</button><button type="button" id="v-all" data-view="all">Všechna jídla</button></span>
+  </div>
+  <div class="row"><label class="lbl" for="sort">Seřadit</label>
+    <select id="sort">
+      <option value="def">Výchozí (podle restaurace)</option>
+      <option value="ratio">Bílkoviny na 100 kcal ↓</option>
+      <option value="kcal">kcal ↑</option>
+      <option value="b">Bílkoviny ↓</option>
+      <option value="s">Sacharidy ↑</option>
+      <option value="t">Tuky ↑</option>
+      <option value="price">Cena ↑</option>
+    </select>
+  </div>
+  <div class="row"><span class="lbl">Druh</span>
+    <button type="button" class="f" data-druh="k">Kuřecí/krůtí</button>
+    <button type="button" class="f" data-druh="v">Vepřové</button>
+    <button type="button" class="f" data-druh="h">Hovězí</button>
+    <button type="button" class="f" data-druh="z">🌱 Bez masa</button>
+    <button type="button" class="f" data-druh="r">🐟 Ryby</button>
+  </div>
+  <div class="row"><span class="lbl">Skrýt</span>
+    <button type="button" class="f" id="nofried" title="Obalované nebo smažené hlavní jídlo. Přílohu (hranolky) si můžeš vyměnit, proto se nepočítá.">Smažené</button>
+    <button type="button" class="f" id="nosoup">Polévky a saláty</button>
+  </div>
+  <div class="row"><label class="lbl" for="maxk">Max. kcal</label>
+    <input type="range" id="maxk" min="300" max="1400" step="50">
+    <output class="kv" id="maxk-out" for="maxk"></output>
+  </div>
+  <div class="row"><span class="count" id="count"></span><button type="button" class="link" id="reset">Výchozí nastavení</button></div>
+</div>
+
+<div class="legend"><span class="chip">✅ nejlepší volba</span><span class="chip">🥣 polévka</span><span class="chip">🌱 bez masa</span><span class="chip">🐟 ryba</span><span class="chip">B bílkoviny · S sacharidy · T tuky (g)</span><span class="chip">B/100 = g bílkovin na 100 kcal</span></div>
 <div id="out" style="display:contents"></div>
 <p class="note">Kalorie a makra jsou moje hrubé odhady, restaurace je neuvádějí. Jídla a ceny z jednotlivých stránek na <a href="https://www.menicka.cz/zlin.html">menicka.cz</a>.</p>
 </main>
 <script>
-// [název, cena, kcal, B, S, T, typ] typ: b=best, f=ryba, s=polévka
-var R=[ ["Prostě Restaurace","Vavrečkova 7074, Zlín","https://www.menicka.cz/8250-proste-restaurace.html","Salát s kuřecím: pitu vynech nebo dej jen půlku a dresink si nech zvlášť.",[
-["🥣 🥩 Masová cibulačka s chlebovými krutony (0,3 l)","35 Kč",230,9,22,11,"s"],
-["Okurkový salát","45 Kč",60,1,8,2],
-["🥩 Vepřové ražniči (cibule, slanina), americké brambory, jalapeños dip (150 g)","169 Kč",980,42,70,58],
-["🥩 Pečené kuřecí stehno na kořenové zelenině, basmati rýže, salátek (250 g)","165 Kč",760,50,72,28],
-["✅ 🥩 Míchaný zeleninový salát s francouzským dresinkem a kuřecím masem, pita (300 g)","169 Kč",560,40,42,24,"b"],
-["🐟 Tip šéfa: filátko z candáta na bylinkách, cukrový hrášek, bramborové pyré s máslem (150 g)","269 Kč",620,38,45,30,"f"]]],
-["Pilsner Urquell Original Restaurant","Vavrečkova 7074, Zlín","https://www.menicka.cz/2992-pilsner-urquell-original-restaurant.html","Kung-pao: sněz jen půlku rýže a přidej rajčatový salát.",[
-["🥣 🥩 Hovězí vývar s masem, zeleninou a nudlemi","35 Kč",150,10,14,5,"s"],
-["Rajčatový salát s červenou cibulkou","30 Kč",70,2,9,3],
-["✅ 🥩 Kuřecí kung-pao s jasmínovou rýží (150 g)","179 Kč",720,42,85,22,"b"],
-["🥩 Svíčková na smetaně s houskovým knedlíkem (150 g)","199 Kč",920,40,95,40],
-["🥩 Trhané vepřové BBQ maso s hranolky a tatarskou omáčkou (150 g)","185 Kč",1100,40,90,62],
-["🥩 Hrachová kaše s uzeným masem, cibulkou, okurkou a chlebem (250 g)","179 Kč",900,45,95,36],
-["🥩 Steak z krkovice po živáňsku s hranolky a tatarskou omáčkou (200 g)","189 Kč",1150,52,75,72],
-["🥩 Spaghetti Carbonara se sýrem Gran Moravia a rukolou (300 g)","175 Kč",950,35,100,45],
-["Smažená gouda v panko strouhance, vařený brambor, tatarská omáčka (120 g)","189 Kč",1000,35,70,64]]],
-["Restaurace Flip (Bernard Pub)","Gahurova 5265, Zlín","https://www.menicka.cz/24-restaurace-flip-bernard-pub.html","Kuřecí nudličky: krokety vyměň za zeleninu nebo salát, omáčky jen trochu.",[
-["🥣 Slepičí vývar se zeleninou a nudlemi","v menu",140,9,14,5,"s"],
-["✅ 🥩 Kuřecí nudličky se šunkou v sýrové omáčce, bramborové krokety","159 Kč",880,48,60,48,"b"],
-["🥩 Bramborové knedlíky plněné uzeným masem, nakládané zelí, cibulka","159 Kč",950,32,120,36],
-["🐟 Míchaný zeleninový salát s vejcem a tuňákem, dressing, mozzarella","159 Kč",520,38,15,34,"f"],
-["🥩 Wrap s kuřecím trhaným stehnem a zeleninou, hranolky, česnekový dip","199 Kč",1050,40,100,55]]],
-["Budvarka Zlín","náměstí Práce 2523, Zlín","https://www.menicka.cz/5881-budvarka-zlin.html","Kuřecí stehno: stáhni kůži, sněz půlku rýže a přiobjednej misku salátu (35 Kč).",[
-["🥣 Bramboračka","35 Kč",180,5,25,7,"s"],
-["🥩 Svíčková na smetaně, houskový knedlík (150 g)","199 Kč",920,40,95,40],
-["🥩 Srbské rizoto sypané sýrem, okurek (300 g)","175 Kč",800,35,95,28],
-["🥩 Steak z vepřové pečeně se sázeným vejcem a slaninou, demi-glace, hranolky (150 g)","195 Kč",1050,55,70,60],
-["✅ 🥩 Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b"],
-["🥩 Anglický roastbeef, hranolky, tatarka (150 g)","229 Kč",900,45,65,50],
-["🥩 Zeleninový salát s medovo-hořčičným dresinkem a kuřecími stripsy ve sweet chilli (300 g)","181 Kč",650,35,50,34],
-["🥩 Smažený karbanátek, šťouchaný brambor, okurek (150 g)","176 Kč",850,30,65,52]]],
-["U Ševce","Kvítková 4323, Zlín","https://www.menicka.cz/5492-u-sevce.html","Španělský ptáček: řekni si o menší porci rýže, omáčky jen trochu.",[
-["🥣 🥩 Čočková s uzeninou","v menu",280,14,30,11,"s"],
-["🥩 Fusilli ve smetanovo-cheddarové omáčce s kuřecími nudličkami","139 Kč",950,40,95,45],
-["Smažené žampiony, vařené brambory s petrželkou","139 Kč",750,15,80,40],
-["🥩 Tortilla s krůtími kousky v Kentucky těstíčku, salátek, rajče, slaninový dip, chipsy","149 Kč",1000,38,90,55],
-["🥩 Steak z vepřové krkovice na grilu s volským okem, pečené grenaille","149 Kč",820,50,45,48],
-["✅ 🥩 Hovězí španělský ptáček, rýže s cibulkou","159 Kč",680,42,65,24,"b"],
-["🥩 Kuřecí Cordon bleu, hranolky, tatarská omáčka","159 Kč",1150,48,85,68]]],
-["Radegastovna Rex","Okružní 4701, Zlín","https://www.menicka.cz/3538-radegastovna-rex.html","Kuřecí prso: americké brambory vyměň za salát nebo zeleninu.",[
-["🥣 🥩 Slepičí vývar s masem, zeleninou a nudlemi","v menu",150,10,14,5,"s"],
-["✅ 🥩 Kuřecí prso zapečené s anglickou slaninou a hermelínem, americké brambory","179 Kč",850,60,55,42,"b"],
-["🥩 Gnocchi se smetanovou hříbkovou omáčkou, nudličky z vepřové panenky, parmazán","182 Kč",950,38,95,46],
-["Smažený sýr gouda, vařené brambory grenaille, tatarská omáčka","189 Kč",1000,35,70,64],
-["🥩 Trhané vepřové, steakové hranolky, slanina, jalapeño, smažená cibule, česnekový dresink, cheddarová omáčka","219 Kč",1350,50,100,82]]],
-["U Barcuchů (jídelna)","Mokrá 5215, Zlín","https://www.menicka.cz/3027-u-barcuchu.html","Kuřecí Caprese: hranolky vyměň za vařené brambory nebo zeleninu.",[
-["🥣 🥩 Hovězí vývar s masem, zeleninou a nudlemi","30 Kč",150,10,14,5,"s"],
-["🥣 Bramboračka","30 Kč",180,5,25,7,"s"],
-["🥩 Francouzské zapékané brambory s uzeným masem, kyselý okurek","119 Kč",850,30,80,45],
-["🥩 Hovězí svíčková na smetaně, houskové knedlíky","139 Kč",920,40,95,40],
-["✅ 🥩 Kuřecí prsa Caprese (rajčata, mozzarella, bazalka), smažené hranolky","125 Kč",800,52,60,38,"b"],
-["🥩 Vepřové kostky na kmíně, jasmínová rýže","119 Kč",700,38,72,26],
-["🥩 Vepřové výpečky, dušené bílé zelí, houskový knedlík","119 Kč",1050,38,100,55],
-["🥩 Minutka: kuřecí řízek „Ondráš“ v bramboráku","170 Kč",1100,45,75,68],
-["Minutka: hermelín v bramboráku","170 Kč",1050,35,70,70],
-["🥩 Minutka: vepřová játra na roštu, americké brambory, tatarka","170 Kč",800,42,55,45],
-["🐟 Minutka: smažená tilápie, bramborový salát s majonézou","175 Kč",950,35,65,60,"f"],
-["🥩 Minutka: smažený sýr se šunkou, hranolky, tatarka","175 Kč",1150,45,85,70],
-["Minutka: smažený hermelín, hranolky, tatarka","175 Kč",1150,40,85,72],
-["🥩 Minutka: knedlíky s vejci a špekem","140 Kč",950,30,100,48]]] ];
-function e(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;")}
-document.getElementById("out").innerHTML=R.map(function(r){
- return '<section class="rest"><header><h2><a style="color:inherit;text-decoration:none" href="'+r[2]+'">'+e(r[0])+'</a></h2><div class="addr">'+e(r[1])+(r[1]?'':'')+'</div></header>'+
- (r[3]?'<div class="tip">'+e(r[3])+'</div>':'')+
- '<div class="cols"><span>Jídlo</span><span>Cena</span><span>kcal</span><span>B</span><span>S</span><span>T</span></div>'+
- r[4].map(function(d){
-  return '<div class="dish '+(d[6]=="b"?"best":d[6]=="f"?"fish":d[6]=="s"?"soup":"")+'"><div class="name">'+e(d[0])+'</div><div class="price">'+e(d[1])+'</div>'+
-  '<div class="m"><span data-l="kcal"><b>'+d[2]+'</b></span><span data-l="B"><b>'+d[3]+'</b></span><span data-l="S"><b>'+d[4]+'</b></span><span data-l="T"><b>'+d[5]+'</b></span></div></div>';
- }).join('')+'</section>';
-}).join('');
-</script>
+// ===== DATA:START (ranní úloha mění jen tento blok) =====
+// Řádek: [název bez ikon, cena, kcal, B, S, T, typ, druh, smažené]
+//  typ: "b" nejlepší, "s" polévka, "p" salát/příloha, "" hlavní jídlo
+//  druh: "k" kuřecí/krůtí, "v" vepřové (i uzenina, slanina, šunka), "h" hovězí, "z" bez masa, "r" ryba
+//  smažené: 1 = obalované/smažené hlavní jídlo, 0 = ne
+// Restaurace: [název, adresa, url, tip, [řádky]]  (prázdné řádky = dnes bez menu)
+var DEN="úterý 3. 11. 2026", SUB="Dnes úterý, kancelář.";
+var R=[
+["Prostě Restaurace", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/8250-proste-restaurace.html", "Salát s kuřecím: pitu vynech nebo dej jen půlku a dresink si nech zvlášť.",[
+ ["Masová cibulačka s chlebovými krutony (0,3 l)", "35 Kč", 230, 9, 22, 11, "s", "v", 0],
+ ["Okurkový salát", "45 Kč", 60, 1, 8, 2, "p", "z", 0],
+ ["Vepřové ražniči (cibule, slanina), americké brambory, jalapeños dip (150 g)", "169 Kč", 980, 42, 70, 58, "", "v", 0],
+ ["Pečené kuřecí stehno na kořenové zelenině, basmati rýže, salátek (250 g)", "165 Kč", 760, 50, 72, 28, "", "k", 0],
+ ["Míchaný zeleninový salát s francouzským dresinkem a kuřecím masem, pita (300 g)", "169 Kč", 560, 40, 42, 24, "b", "k", 0],
+ ["Tip šéfa: filátko z candáta na bylinkách, cukrový hrášek, bramborové pyré s máslem (150 g)", "269 Kč", 620, 38, 45, 30, "", "r", 0]]],
+["Pilsner Urquell Original Restaurant", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/2992-pilsner-urquell-original-restaurant.html", "Kung-pao: sněz jen půlku rýže a přidej rajčatový salát.",[
+ ["Hovězí vývar s masem, zeleninou a nudlemi", "35 Kč", 150, 10, 14, 5, "s", "h", 0],
+ ["Rajčatový salát s červenou cibulkou", "30 Kč", 70, 2, 9, 3, "p", "z", 0],
+ ["Kuřecí kung-pao s jasmínovou rýží (150 g)", "179 Kč", 720, 42, 85, 22, "b", "k", 0],
+ ["Svíčková na smetaně s houskovým knedlíkem (150 g)", "199 Kč", 920, 40, 95, 40, "", "h", 0],
+ ["Trhané vepřové BBQ maso s hranolky a tatarskou omáčkou (150 g)", "185 Kč", 1100, 40, 90, 62, "", "v", 0],
+ ["Hrachová kaše s uzeným masem, cibulkou, okurkou a chlebem (250 g)", "179 Kč", 900, 45, 95, 36, "", "v", 0],
+ ["Steak z krkovice po živáňsku s hranolky a tatarskou omáčkou (200 g)", "189 Kč", 1150, 52, 75, 72, "", "v", 0],
+ ["Spaghetti Carbonara se sýrem Gran Moravia a rukolou (300 g)", "175 Kč", 950, 35, 100, 45, "", "v", 0],
+ ["Smažená gouda v panko strouhance, vařený brambor, tatarská omáčka (120 g)", "189 Kč", 1000, 35, 70, 64, "", "z", 1]]],
+["Restaurace Flip (Bernard Pub)", "Gahurova 5265, Zlín", "https://www.menicka.cz/24-restaurace-flip-bernard-pub.html", "Kuřecí nudličky: krokety vyměň za zeleninu nebo salát, omáčky jen trochu.",[
+ ["Slepičí vývar se zeleninou a nudlemi", "v menu", 140, 9, 14, 5, "s", "k", 0],
+ ["Kuřecí nudličky se šunkou v sýrové omáčce, bramborové krokety", "159 Kč", 880, 48, 60, 48, "b", "k", 0],
+ ["Bramborové knedlíky plněné uzeným masem, nakládané zelí, cibulka", "159 Kč", 950, 32, 120, 36, "", "v", 0],
+ ["Míchaný zeleninový salát s vejcem a tuňákem, dressing, mozzarella", "159 Kč", 520, 38, 15, 34, "", "r", 0],
+ ["Wrap s kuřecím trhaným stehnem a zeleninou, hranolky, česnekový dip", "199 Kč", 1050, 40, 100, 55, "", "k", 0]]],
+["Budvarka Zlín", "náměstí Práce 2523, Zlín", "https://www.menicka.cz/5881-budvarka-zlin.html", "Kuřecí stehno: stáhni kůži, sněz půlku rýže a přiobjednej misku salátu (35 Kč).",[
+ ["Bramboračka", "35 Kč", 180, 5, 25, 7, "s", "z", 0],
+ ["Svíčková na smetaně, houskový knedlík (150 g)", "199 Kč", 920, 40, 95, 40, "", "h", 0],
+ ["Srbské rizoto sypané sýrem, okurek (300 g)", "175 Kč", 800, 35, 95, 28, "", "v", 0],
+ ["Steak z vepřové pečeně se sázeným vejcem a slaninou, demi-glace, hranolky (150 g)", "195 Kč", 1050, 55, 70, 60, "", "v", 0],
+ ["Pečené kuřecí stehno, rýže, okurek (240 g)", "179 Kč", 700, 48, 62, 27, "b", "k", 0],
+ ["Anglický roastbeef, hranolky, tatarka (150 g)", "229 Kč", 900, 45, 65, 50, "", "h", 0],
+ ["Zeleninový salát s medovo-hořčičným dresinkem a kuřecími stripsy ve sweet chilli (300 g)", "181 Kč", 650, 35, 50, 34, "", "k", 1],
+ ["Smažený karbanátek, šťouchaný brambor, okurek (150 g)", "176 Kč", 850, 30, 65, 52, "", "v", 1]]],
+["U Ševce", "Kvítková 4323, Zlín", "https://www.menicka.cz/5492-u-sevce.html", "Španělský ptáček: řekni si o menší porci rýže, omáčky jen trochu.",[
+ ["Čočková s uzeninou", "v menu", 280, 14, 30, 11, "s", "v", 0],
+ ["Fusilli ve smetanovo-cheddarové omáčce s kuřecími nudličkami", "139 Kč", 950, 40, 95, 45, "", "k", 0],
+ ["Smažené žampiony, vařené brambory s petrželkou", "139 Kč", 750, 15, 80, 40, "", "z", 1],
+ ["Tortilla s krůtími kousky v Kentucky těstíčku, salátek, rajče, slaninový dip, chipsy", "149 Kč", 1000, 38, 90, 55, "", "k", 1],
+ ["Steak z vepřové krkovice na grilu s volským okem, pečené grenaille", "149 Kč", 820, 50, 45, 48, "", "v", 0],
+ ["Hovězí španělský ptáček, rýže s cibulkou", "159 Kč", 680, 42, 65, 24, "b", "h", 0],
+ ["Kuřecí Cordon bleu, hranolky, tatarská omáčka", "159 Kč", 1150, 48, 85, 68, "", "k", 1]]],
+["Radegastovna Rex", "Okružní 4701, Zlín", "https://www.menicka.cz/3538-radegastovna-rex.html", "Kuřecí prso: americké brambory vyměň za salát nebo zeleninu.",[
+ ["Slepičí vývar s masem, zeleninou a nudlemi", "v menu", 150, 10, 14, 5, "s", "k", 0],
+ ["Kuřecí prso zapečené s anglickou slaninou a hermelínem, americké brambory", "179 Kč", 850, 60, 55, 42, "b", "k", 0],
+ ["Gnocchi se smetanovou hříbkovou omáčkou, nudličky z vepřové panenky, parmazán", "182 Kč", 950, 38, 95, 46, "", "v", 0],
+ ["Smažený sýr gouda, vařené brambory grenaille, tatarská omáčka", "189 Kč", 1000, 35, 70, 64, "", "z", 1],
+ ["Trhané vepřové, steakové hranolky, slanina, jalapeño, smažená cibule, česnekový dresink, cheddarová omáčka", "219 Kč", 1350, 50, 100, 82, "", "v", 0]]],
+["U Barcuchů (jídelna)", "Mokrá 5215, Zlín", "https://www.menicka.cz/3027-u-barcuchu.html", "Kuřecí Caprese: hranolky vyměň za vařené brambory nebo zeleninu.",[
+ ["Hovězí vývar s masem, zeleninou a nudlemi", "30 Kč", 150, 10, 14, 5, "s", "h", 0],
+ ["Bramboračka", "30 Kč", 180, 5, 25, 7, "s", "z", 0],
+ ["Francouzské zapékané brambory s uzeným masem, kyselý okurek", "119 Kč", 850, 30, 80, 45, "", "v", 0],
+ ["Hovězí svíčková na smetaně, houskové knedlíky", "139 Kč", 920, 40, 95, 40, "", "h", 0],
+ ["Kuřecí prsa Caprese (rajčata, mozzarella, bazalka), smažené hranolky", "125 Kč", 800, 52, 60, 38, "b", "k", 0],
+ ["Vepřové kostky na kmíně, jasmínová rýže", "119 Kč", 700, 38, 72, 26, "", "v", 0],
+ ["Vepřové výpečky, dušené bílé zelí, houskový knedlík", "119 Kč", 1050, 38, 100, 55, "", "v", 0],
+ ["Minutka: kuřecí řízek „Ondráš“ v bramboráku", "170 Kč", 1100, 45, 75, 68, "", "k", 1],
+ ["Minutka: hermelín v bramboráku", "170 Kč", 1050, 35, 70, 70, "", "z", 1],
+ ["Minutka: vepřová játra na roštu, americké brambory, tatarka", "170 Kč", 800, 42, 55, 45, "", "v", 0],
+ ["Minutka: smažená tilápie, bramborový salát s majonézou", "175 Kč", 950, 35, 65, 60, "", "r", 1],
+ ["Minutka: smažený sýr se šunkou, hranolky, tatarka", "175 Kč", 1150, 45, 85, 70, "", "v", 1],
+ ["Minutka: smažený hermelín, hranolky, tatarka", "175 Kč", 1150, 40, 85, 72, "", "z", 1],
+ ["Minutka: knedlíky s vejci a špekem", "140 Kč", 950, 30, 100, 48, "", "v", 0]]]
+];
+// ===== DATA:END =====
 
+(function(){
+var KEY="obedy-filtry-v1";
+var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,r:0},nofried:0,nosoup:0,maxk:1400};
+var st=JSON.parse(JSON.stringify(DEF));
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"null");if(sv&&sv.druh){for(var k in DEF)if(k in sv)st[k]=sv[k];}}catch(err){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(err){}}
+function e(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
+function $(id){return document.getElementById(id)}
+if(DEN)$("h1").textContent="Obědy Zlín · "+DEN;
+$("sub").textContent="Pořadí podle polohy: Po–St Vavrečkova 7074, Čt–Pá Podlesí 5375."+(SUB?" "+SUB:"");
+
+function ratio(d){return d[2]?d[3]/d[2]*100:0}
+function price(d){var n=parseInt(String(d[1]).replace(/\s/g,""),10);return isNaN(n)?0:n}
+var SORTS={
+  ratio:function(a,b){return ratio(b)-ratio(a)},
+  kcal:function(a,b){return a[2]-b[2]},
+  b:function(a,b){return b[3]-a[3]},
+  s:function(a,b){return a[4]-b[4]},
+  t:function(a,b){return a[5]-b[5]},
+  price:function(a,b){return price(a)-price(b)}
+};
+function side(d){return d[6]=="s"||d[6]=="p"}
+function ok(d){
+  if(!st.druh[d[7]||"z"])return false;
+  if(st.nofried&&d[8])return false;
+  if(st.nosoup&&side(d))return false;
+  if(st.maxk<1400&&d[2]>st.maxk)return false;
+  return true;
+}
+function sorted(list,key){
+  var f=SORTS[key];
+  return f?list.slice().sort(function(a,b){return f(a,b)||a.i-b.i}):list;
+}
+function icons(d){
+  return (d[6]=="b"?"✅ ":"")+(d[6]=="s"?"🥣 ":"")+(d[7]=="z"?"🌱 ":"")+(d[7]=="r"?"🐟 ":"");
+}
+function cols(){
+  var c=[["Jídlo","def"],["Cena","price"],["kcal","kcal"],["B","b"],["S","s"],["T","t"],["B/100","ratio"]];
+  return '<div class="cols">'+c.map(function(x,i){
+    return '<button type="button" data-sort="'+x[1]+'" aria-pressed="'+(st.sort==x[1])+'">'+x[0]+(st.sort==x[1]&&i?(x[1]=="b"||x[1]=="ratio"?" ↓":" ↑"):"")+'</button>';
+  }).join('')+'</div>';
+}
+function row(d,from){
+  var cls=d[6]=="b"?"best":d[7]=="r"?"fish":d[6]=="s"?"soup":"";
+  return '<div class="dish '+cls+'"><div class="name">'+icons(d)+e(d[0])+(from?'<span class="from">'+e(from)+'</span>':'')+'</div><div class="price">'+e(d[1])+'</div>'+
+  '<div class="m"><span data-l="kcal"><b>'+d[2]+'</b></span><span data-l="B"><b>'+d[3]+'</b></span><span data-l="S"><b>'+d[4]+'</b></span><span data-l="T"><b>'+d[5]+'</b></span><span data-l="B/100 kcal"><b>'+ratio(d).toFixed(1)+'</b></span></div></div>';
+}
+function render(){
+  var total=0,shown=0,html="";
+  if(st.view=="all"){
+    var all=[];
+    R.forEach(function(r){r[4].forEach(function(d,i){total++;if(ok(d)){var x=d.slice();x.i=all.length;x.r=r[0];all.push(x)}})});
+    shown=all.length;
+    var key=st.sort=="def"?"ratio":st.sort;
+    all=sorted(all.filter(function(d){return !side(d)}),key).concat(sorted(all.filter(side),key));
+    html='<section class="rest">'+cols()+(all.length?all.map(function(d){return row(d,d.r)}).join(''):'<div class="empty">Filtrům dnes neodpovídá žádné jídlo.</div>')+'</section>';
+  }else{
+    html=R.map(function(r){
+      var items=r[4].map(function(d,i){var x=d.slice();x.i=i;return x});
+      total+=items.length;
+      var vis=items.filter(ok);shown+=vis.length;
+      var best=vis.filter(function(d){return d[6]=="b"});
+      var mains=sorted(vis.filter(function(d){return d[6]!="b"&&!side(d)}),st.sort);
+      var sides=sorted(vis.filter(side),st.sort);
+      var list=best.concat(mains,sides);
+      var hidden=items.length-vis.length;
+      return '<section class="rest"><header><h2><a style="color:inherit;text-decoration:none" href="'+e(r[2])+'">'+e(r[0])+'</a></h2><div class="addr">'+e(r[1])+'</div></header>'+
+        (r[3]?'<div class="tip">'+e(r[3])+'</div>':'')+
+        (!items.length?'<div class="empty">Dnes menu nemá.</div>':
+          cols()+(list.length?list.map(function(d){return row(d)}).join(''):'<div class="empty">Filtrům neodpovídá žádné jídlo.</div>')+
+          (hidden?'<div class="hid">Skryto filtrem: '+hidden+'</div>':''))+
+        '</section>';
+    }).join('');
+  }
+  $("out").innerHTML=html;
+  $("count").textContent="Zobrazeno "+shown+" z "+total+" jídel.";
+  sync();
+}
+function sync(){
+  $("v-rest").setAttribute("aria-pressed",st.view=="rest");
+  $("v-all").setAttribute("aria-pressed",st.view=="all");
+  $("sort").value=st.sort;
+  $("sort").options[0].text=st.view=="all"?"Výchozí (bílkoviny na 100 kcal)":"Výchozí (podle restaurace)";
+  document.querySelectorAll("[data-druh]").forEach(function(b){b.setAttribute("aria-pressed",!!st.druh[b.dataset.druh])});
+  $("nofried").setAttribute("aria-pressed",!!st.nofried);
+  $("nosoup").setAttribute("aria-pressed",!!st.nosoup);
+  $("maxk").value=st.maxk;
+  $("maxk-out").textContent=st.maxk>=1400?"bez limitu":"≤ "+st.maxk;
+}
+function change(){save();render()}
+document.querySelectorAll("[data-view]").forEach(function(b){b.addEventListener("click",function(){st.view=b.dataset.view;change()})});
+$("sort").addEventListener("change",function(){st.sort=this.value;change()});
+document.querySelectorAll("[data-druh]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.druh;st.druh[k]=st.druh[k]?0:1;change()})});
+$("nofried").addEventListener("click",function(){st.nofried=st.nofried?0:1;change()});
+$("nosoup").addEventListener("click",function(){st.nosoup=st.nosoup?0:1;change()});
+$("maxk").addEventListener("input",function(){st.maxk=+this.value;change()});
+$("reset").addEventListener("click",function(){st=JSON.parse(JSON.stringify(DEF));change()});
+$("out").addEventListener("click",function(ev){var b=ev.target.closest("[data-sort]");if(b){st.sort=b.dataset.sort;change()}});
+render();
+})();
+</script>
