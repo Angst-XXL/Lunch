@@ -1,4 +1,4 @@
-Úloha: každý pracovní den ráno (Europe/Prague, přehled má být hotový do 7:30) vytvoř přehled denních obědů ve Zlíně.
+Úloha: každý pracovní den ráno (Europe/Prague, přehled má být hotový do 7:30) vytvoř přehled denních obědů ve Zlíně. (Stejné zadání je v souboru prompt-obedy.md v repozitáři angst-xxl/lunch.)
 
 1) Svátky: pokud je dnes státní svátek v ČR nebo víkend, napiš jen "Dnes je volno" a skonči.
 
@@ -18,7 +18,7 @@ Ověř, že menu na stránce je opravdu pro dnešní datum. Jídla si nevymýšl
 
 5) Pořadí restaurací podle polohy: pondělí až středa od Vavrečkova 7074 (Prostě a Pilsner Urquell první, pak podle vzdálenosti), čtvrtek a pátek od Podlesí 5375 (domov). Souřadnice restaurací jsou ve stránkách v kódu mapy (maps.LatLng).
 
-6) Výstup: vytvoř stránku přesně podle šablony níže. Neměň CSS, strukturu ani vykreslovací kód, jen vyplň pole R a nadpis. Formát řádku: [název, cena, kcal, B, S, T, typ], kde typ je "b" (nejlepší), "f" (ryba), "s" (polévka) nebo vynech. Restaurace: [název, adresa, url, tip, [řádky]]. Ulož ji jako HTML soubor obedy-YYYY-MM-DD.html do pracovního adresáře (je-li to git repozitář, commitni ho a pushni na svou pracovní větev) a pošli ho uživateli nástrojem SendUserFile (display: render). Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích a obalech nevypisuj. Na konec napiš česky krátké shrnutí: nejlepší jídlo v každé restauraci a které restaurace dnes menu nemají. Odpověď piš česky.
+6) Výstup: vytvoř stránku přesně podle šablony níže. Neměň CSS, strukturu ani vykreslovací kód, jen vyplň pole R a nadpis. Formát řádku: [název, cena, kcal, B, S, T, typ], kde typ je "b" (nejlepší), "f" (ryba), "s" (polévka) nebo vynech. Restaurace: [název, adresa, url, tip, [řádky]]. Ulož ji jako HTML soubor obedy-YYYY-MM-DD.html do pracovního adresáře (je-li to git repozitář, commitni ho a pushni na svou pracovní větev) a zveřejni ho na STÁLÉ adrese Artifactu https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK: nejdřív zavolej nástroj Artifact s action "read" a tímto url, pak Artifact publish s file_path dnešního souboru, stejným url a label "D. M. RRRR" (bez icon, NIKDY nevytvářej nový Artifact bez url). Uživatel má tuto adresu v záložkách Safari. Pokud zveřejnění selže, pošli soubor nástrojem SendUserFile (display: render) a napiš proč. I v den volna („Dnes je volno“) stránku nepřepisuj. Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích a obalech nevypisuj. Na konec napiš česky krátké shrnutí: nejlepší jídlo v každé restauraci a které restaurace dnes menu nemají. Odpověď piš česky.
 
 ŠABLONA:
 ```html
