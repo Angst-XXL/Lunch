@@ -27,7 +27,7 @@ Restaurace: [název, adresa, url, tip, [řádky]].
 Řádek: [název, cena, kcal, B, S, T, typ, druh, smažené]
 - název: BEZ ikon a emoji (ikony ✅ 🥣 🌱 🐟 doplní stránka sama)
 - typ: "b" nejlepší, "s" polévka, "p" salát nebo příloha samostatně, "" hlavní jídlo
-- druh: "k" kuřecí/krůtí (i slepičí vývar), "v" vepřové (i uzenina, slanina, šunka, špek, karbanátek, směs), "h" hovězí, "z" bez masa, "r" ryba. U jídla s více druhy masa dej hlavní maso.
+- druh: "k" drůbež: kuřecí, krůtí, kachna, husa (i slepičí vývar), "v" vepřové (i uzenina, slanina, šunka, špek, karbanátek, směs), "h" hovězí, "z" bez masa, "r" ryba. U jídla s více druhy masa dej hlavní maso.
 - smažené: 1 když je HLAVNÍ složka obalovaná nebo smažená (řízek, smažený sýr, cordon bleu, stripsy, v bramboráku, Kentucky, panko), jinak 0. Smažené přílohy (hranolky, krokety, smažená cibulka) se nepočítají, ty jde vyměnit.
 Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0]
 
