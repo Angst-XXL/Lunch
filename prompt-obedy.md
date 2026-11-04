@@ -40,9 +40,9 @@ Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,
 
 9) Zveřejni: Artifact publish s file_path dnešního souboru, url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK a label s dnešním datem (např. "5. 11. 2026"), bez icon a bez capabilities (stránka si oprávnění ponechá). NIKDY nevytvářej nový Artifact bez url. Pokud zveřejnění selže, pošli soubor nástrojem SendUserFile (display: render) a napiš proč.
 
-9b) GitHub Pages: kopii na https://angst-xxl.github.io/Lunch/ obstarává samostatná synchronizace (v 7:34 a 11:34), v tomto běhu do GitHubu nic nenahrávej.
+9b) GitHub Pages: repozitář Angst-XXL/Lunch je k této úloze připojený. V jeho pracovní kopii se přepni na větev claude/new-session-w07zdq (git fetch origin claude/new-session-w07zdq && git checkout claude/new-session-w07zdq), zkopíruj tam dnešní soubor obedy-YYYY-MM-DD.html, spusť "python3 pages-index.py obedy-YYYY-MM-DD.html" (vyrobí index.html), commitni oba soubory se zprávou "Obědy D. M. RRRR" a pushni přesně na tuto větev: git push origin claude/new-session-w07zdq. Uživatel to výslovně povoluje, právě z této větve běží jeho GitHub Pages. Na jinou větev nepushuj a nic jiného v repu neměň. Když push selže, Artifact nech, jak je, a napiš do shrnutí proč.
 
-10) Na konec napiš krátké shrnutí: odkaz na stránku, doporučené jídlo (s číslem menu) v každé restauraci pro dnešek a které restaurace dnes nebo další pracovní den menu nemají.
+10) Na konec napiš krátké shrnutí: odkaz na stránku (claude.ai i https://angst-xxl.github.io/Lunch/), doporučené jídlo (s číslem menu) v každé restauraci pro dnešek a které restaurace dnes nebo další pracovní den menu nemají.
 
 11) Oznámení: úplně nakonec zavolej nástroj PushNotification (načti ho přes ToolSearch "select:PushNotification") se zprávou do 200 znaků, např. "Obědy 5. 11. hotové. Doporučené: č. 1 kuřecí roláda se špenátem (U Ševce). claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK". Pošli ho i v den volna ("Dnes je volno"). Pokud nástroj hlásí, že oznámení nebylo odesláno, napiš to do shrnutí.
 

@@ -486,7 +486,7 @@ render();
 
 /* Ruční aktualizace: spustí naplánovanou úlohu vlastníka přes konektor Claude Code Remote; ostatním se tlačítko nezobrazí */
 (function(){
-  var TRIG="trig_01DLNSJ34ud5fVv59FSfkyP3", SYNC="trig_01DHWgWWdw9hARMFkGp4o6LC", KEY2="obedy-refresh-at", KEY3="obedy-sync-pending", WAIT=4*60*1000;
+  var TRIG="trig_01YUMfvGqRm9kLhMgX3tjxCn", KEY2="obedy-refresh-at", KEY3="obedy-sync-pending", WAIT=4*60*1000;
   var curAKT=(typeof AKT=="string")?AKT:"";
   function getPend(){try{return JSON.parse(localStorage.getItem(KEY3)||"null")}catch(e){return null}}
   function setPend(v){try{if(v)localStorage.setItem(KEY3,JSON.stringify(v));else localStorage.removeItem(KEY3)}catch(e){}}
@@ -505,18 +505,7 @@ render();
     window.claude.use("mcp").then(function(mcp){
     if(!mcp)return;
     btn.hidden=false;
-    /* po ruční aktualizaci: až stránka dostane nová data, spusť kopírování na github.io */
-    var pend=getPend();
-    if(pend&&Date.now()-pend.t>20*60*1000){setPend(null);pend=null}
-    if(pend&&curAKT&&curAKT!==pend.akt){
-      setPend(null);
-      mcp.callTool("Claude Code Remote","fire_trigger",{trigger_id:SYNC,text:"Spuštěno z tlačítka po ruční aktualizaci obědů."},{cache:false}).then(function(){
-        say("Nová data jsou tady. Kopie na angst-xxl.github.io/Lunch se aktualizuje během pár minut.");
-      },function(err){
-        say("Nová data jsou tady, ale kopii na github.io se nepodařilo spustit ("+((err&&err.code)||"chyba")+"). Dorovná se při synchronizaci v 7:34 nebo 11:34.",1);
-      });
-      return;
-    }
+    setPend(null); /* starý příznak synchronizace už není potřeba */
     if(busy())say("Aktualizace už běží. Stránka se sama obnoví, až budou nová data.");
     btn.addEventListener("click",function(){
       if(btn.disabled)return;
@@ -524,8 +513,8 @@ render();
       mcp.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIG,
         text:"Ruční aktualizace z tlačítka na stránce. Uživatel chce čerstvá data hned. Proveď ji i o víkendu nebo ve svátek, pokud restaurace mají menu na dnešek nebo další pracovní den; jinak napiš proč a stránku nepřepisuj. AKT vyplň vždy."},
         {cache:false}).then(function(){
-        mark();busy();setPend({akt:curAKT,t:Date.now()});
-        say("Aktualizace se spustila. Za 2–3 minuty se stránka sama obnoví s novými daty. Nech ji otevřenou, ať se pak aktualizuje i kopie na github.io.");
+        mark();busy();
+        say("Aktualizace se spustila. Za 2–3 minuty se stránka sama obnoví s novými daty. Za pár minut se aktualizuje i kopie na github.io.");
       },function(err){
         var c=err&&err.code;btn.disabled=false;btn.textContent="↻ Aktualizovat teď";
         if(c=="approval_required")say("Spuštění potřebuje tvoje schválení. Klikni znovu a v dialogu ho povol.",1);
