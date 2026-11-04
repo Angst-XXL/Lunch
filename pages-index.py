@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 """Z dnešní stránky obědů (formát pro Artifact, bez <html>/<head>) vyrobí index.html pro GitHub Pages.
 
-Použití: python3 pages-index.py obedy-RRRR-MM-DD.html
+Použití: python3 pages-index.py obedy-RRRR-MM-DD.html  (nebo index.html stažený z Artifactu)
 """
 import sys
 
 src = sys.argv[1]
 body = open(src, encoding="utf-8").read()
+# soubor stažený z Artifactu má kolem stránky obal <!doctype html>…<body> … </body></html>: odstraň ho
+if body.lstrip().lower().startswith("<!doctype") and "<body>" in body:
+    body = body.split("<body>", 1)[1].rsplit("</body>", 1)[0].lstrip("\n")
 cut = body.find("<style>")
 head_part, rest = (body[:cut], body[cut:]) if cut > 0 else ("", body)
 head = (
