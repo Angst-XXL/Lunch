@@ -269,12 +269,13 @@ function renderHead(){
   var d=days[sel];
   $("h1").textContent="Obědy Zlín"+(d?" · "+d.den:"");
   var el=$("upd"),a=(typeof AKT=="string"&&AKT)?new Date(AKT):null;
-  var hasToday=days.some(function(x){return x.datum==TODAY});
+  /* varuj jen u starých dat: když přehled začíná až dalším pracovním dnem (neděle, svátek), je v pořádku */
+  var hasToday=days.some(function(x){return x.datum>=TODAY});
   if(!a||isNaN(a)){el.hidden=!!days.length;if(!days.length)el.textContent="Data zatím nejsou.";return}
   el.hidden=false;
   var when=new Intl.DateTimeFormat("cs-CZ",{timeZone:tz,weekday:"long",day:"numeric",month:"numeric",year:"numeric"}).format(a)+
     " v "+new Intl.DateTimeFormat("cs-CZ",{timeZone:tz,hour:"numeric",minute:"2-digit"}).format(a);
-  el.textContent=(hasToday?"":"⚠ Přehled nemá menu na dnešek. ")+"Aktualizováno: "+when;
+  el.textContent=(hasToday?"":"⚠ Přehled je starý, nemá menu na dnešek ani další dny. ")+"Aktualizováno: "+when;
   el.classList.toggle("stale",!hasToday);
 }
 
