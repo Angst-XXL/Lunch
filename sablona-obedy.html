@@ -171,7 +171,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
       <div class="place">
         <label class="lbl" for="pl-work">Práce</label>
         <div class="row"><input type="text" id="pl-work" placeholder="souřadnice nebo odkaz z Mapy.cz" autocomplete="off"></div>
-        <span class="pl-ok" id="pl-work-st"></span>
+        <span class="pl-ok" id="pl-work-st"></span> <button type="button" class="link" id="pl-work-clear" hidden>smazat práci</button>
       </div>
       <div class="place">
         <label class="lbl" for="pl-home">Domov</label>
@@ -181,7 +181,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
       <div class="place">
         <span class="lbl">Kde jsem v který den</span>
         <div class="wk" id="wk"></div>
-        <span class="hint">Klepnutím přepneš Práce ↔ Domov. Restaurace se řadí od místa toho dne.</span>
+        <span class="hint">Klepnutím přepneš Práce ↔ Domov. Restaurace se řadí od místa toho dne. Oblíbené (☆) a skryté restaurace platí zvlášť pro práci a zvlášť pro domov.</span>
       </div>
       <div class="row"><span class="lbl">Téma</span>
         <span class="seg"><button type="button" data-theme-set="auto">Auto</button><button type="button" data-theme-set="light">Světlé</button><button type="button" data-theme-set="dark">Tmavé</button></span>
@@ -221,11 +221,14 @@ var DAYS=["Ne","Po","Út","St","Čt","Pá","So"], DAYL=["neděle","pondělí","�
 var KEY="obedy-filtry-v1", KEYP="obedy-osobni-v1";
 var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,d:1,r:0},nofried:0,nosoup:0,nosalad:0,maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
 var PDEF={work:{name:"Vavrečkova 7074",lat:49.224476,lng:17.659139},home:null,
-  sched:{1:"work",2:"work",3:"work",4:"home",5:"home"},theme:"auto",fav:{},hide:{}};
+  sched:{1:"work",2:"work",3:"work",4:"home",5:"home"},theme:"auto",fav:{work:{},home:{}},hide:{work:{},home:{}}};
 function clone(o){return JSON.parse(JSON.stringify(o))}
 var st=clone(DEF), ps=clone(PDEF);
 try{var sv=JSON.parse(localStorage.getItem(KEY)||"null");if(sv&&sv.druh){for(var k in DEF)if(k in sv)st[k]=sv[k];if(!("d" in st.druh))st.druh.d=1}}catch(err){}
 try{var pv=JSON.parse(localStorage.getItem(KEYP)||"null");if(pv&&typeof pv=="object"){for(var k2 in PDEF)if(k2 in pv)ps[k2]=pv[k2]}}catch(err){}
+/* oblíbené a skryté zvlášť pro práci a domov (starší uložené nastavení platí pro obě místa) */
+function perPlace(x){if(!x||typeof x!="object")return {work:{},home:{}};if(x.work||x.home)return {work:x.work||{},home:x.home||{}};return {work:clone(x),home:clone(x)}}
+ps.fav=perPlace(ps.fav);ps.hide=perPlace(ps.hide);
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(err){}}
 function saveP(){try{localStorage.setItem(KEYP,JSON.stringify(ps))}catch(err){}}
 function e(s){return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/"/g,"&quot;")}
@@ -294,20 +297,25 @@ function fmtDist(m){return m<40?"hned vedle":m<1000?(Math.round(m/10)*10)+" m":(
 function slug(url){var m=String(url).match(/menicka\.cz\/(\d+)-/);return m?m[1]:url}
 function origin(){
   var d=days[sel], w=d?wd(d.datum):1, which=ps.sched[w]||"work", p=ps[which];
-  if(!p&&which=="home")return {which:which,p:ps.work,fallback:true};
+  if(!p){var other=which=="home"?ps.work:ps.home;return {which:which,p:other||null,fallback:true}}
   return {which:which,p:p,fallback:false};
 }
+function FAV(){return ps.fav[origin().which]}
+function HIDE(){return ps.hide[origin().which]}
+function placeIn(){return origin().which=="home"?"doma":"v práci"}
 function restaurants(){
   var o=origin(), list=R().map(function(r,i){var g=GEO[slug(r[2])];return {r:r,i:i,d:(o.p&&g)?dist(o.p,g):null}});
   list.sort(function(a,b){
-    var fa=ps.fav[slug(a.r[2])]?0:1,fb=ps.fav[slug(b.r[2])]?0:1; if(fa!=fb)return fa-fb;
+    var fv=FAV(),fa=fv[slug(a.r[2])]?0:1,fb=fv[slug(b.r[2])]?0:1; if(fa!=fb)return fa-fb;
     if(a.d!=null&&b.d!=null&&Math.abs(a.d-b.d)>1)return a.d-b.d; return a.i-b.i});
   return list;
 }
 function renderSub(){
   var o=origin(), d=days[sel], w=d?wd(d.datum):1;
   var txt;
-  if(o.fallback)txt="Řazeno od práce ("+o.p.name+"). "+(DAYV[w]||"").replace(/^./,function(c){return c.toUpperCase()})+" jsi doma, ale domov není nastavený. Nastav ho v „Moje nastavení“.";
+  var Den=(DAYV[w]||"").replace(/^./,function(c){return c.toUpperCase()});
+  if(o.fallback&&!o.p)txt="Místa nejsou nastavená, restaurace jsou v původním pořadí. Nastav práci a domov v „Moje nastavení“.";
+  else if(o.fallback)txt=(o.which=="home"?"Řazeno od práce. "+Den+" jsi doma, ale domov není nastavený. Nastav ho":"Řazeno od domova. "+Den+" jsi v práci, ale práce není nastavená. Nastav ji")+" v „Moje nastavení“.";
   else txt="Řazeno podle vzdálenosti od místa, kde jsi "+(DAYV[w]||"")+": "+(o.which=="home"?"doma":"v práci")+(o.p&&o.p.name&&!/^(vlastní místo|domov|práce)$/.test(o.p.name)?" ("+o.p.name+")":"")+".";
   $("sub").textContent=txt;
 }
@@ -385,7 +393,8 @@ function row(d,from){
 function render(){
   renderHead();renderDays();renderSub();
   var total=0,shown=0,html="",list=restaurants(),hiddenR=[];
-  var visR=list.filter(function(x){if(ps.hide[slug(x.r[2])]){hiddenR.push(x.r);return false}return true});
+  var hd=HIDE(),fv=FAV(),pin=placeIn();
+  var visR=list.filter(function(x){if(hd[slug(x.r[2])]){hiddenR.push(x.r);return false}return true});
   if(!days.length){html='<div class="empty">Zatím tu nejsou žádná data.</div>'}
   else if(st.view=="all"){
     var all=[];
@@ -405,8 +414,8 @@ function render(){
       var lst=st.sort=="num"?sorted(vis,"num"):best.concat(mains,sides);
       var hidden=items.length-vis.length;
       return '<section class="rest"><header><div class="hd"><h2><a style="color:inherit;text-decoration:none" href="'+e(r[2])+'">'+e(r[0])+'</a></h2><div class="addr">'+e(r[1])+(x.d!=null?' · '+fmtDist(x.d):'')+'</div></div>'+
-        '<button type="button" class="hb fav" data-fav="'+e(s)+'" aria-pressed="'+!!ps.fav[s]+'" title="Oblíbená restaurace jde nahoru">'+(ps.fav[s]?'★ Oblíbená':'☆')+'</button>'+
-        '<button type="button" class="hb" data-hide="'+e(s)+'" title="Skrýt restauraci">Skrýt</button></header>'+
+        '<button type="button" class="hb fav" data-fav="'+e(s)+'" aria-pressed="'+!!fv[s]+'" title="Oblíbená '+pin+': jde nahoru">'+(fv[s]?'★ Oblíbená':'☆')+'</button>'+
+        '<button type="button" class="hb" data-hide="'+e(s)+'" title="Skrýt, když jsem '+pin+'">Skrýt</button></header>'+
         (r[3]?'<div class="tip">'+e(r[3])+'</div>':'')+
         (!items.length?'<div class="empty">Tento den menu nemá.</div>':
           cols()+(lst.length?lst.map(function(d){return row(d)}).join(''):'<div class="empty">Filtrům neodpovídá žádné jídlo.</div>')+
@@ -416,9 +425,9 @@ function render(){
   }
   $("out").innerHTML=html;
   var hl=$("hiddenlist");
-  if(hiddenR.length){hl.hidden=false;hl.innerHTML='Skryté restaurace: '+hiddenR.map(function(r){return '<button type="button" class="hb" data-unhide="'+e(slug(r[2]))+'">'+e(r[0])+' · zobrazit</button>'}).join('')}
+  if(hiddenR.length){hl.hidden=false;hl.innerHTML='Skryté '+pin+': '+hiddenR.map(function(r){return '<button type="button" class="hb" data-unhide="'+e(slug(r[2]))+'">'+e(r[0])+' · zobrazit</button>'}).join('')}
   else{hl.hidden=true;hl.innerHTML=""}
-  $("count").textContent="Zobrazeno "+shown+" z "+total+" jídel"+(hiddenR.length?" ("+hiddenR.length+" restaurace skryté)":"")+".";
+  $("count").textContent="Zobrazeno "+shown+" z "+total+" jídel"+(hiddenR.length?" ("+hiddenR.length+" restaurace skryté "+pin+")":"")+".";
   sync();
 }
 function sync(){
@@ -438,7 +447,7 @@ function changeP(){saveP();render();renderSettings()}
 function renderSettings(){
   [["work","pl-work-st"],["home","pl-home-st"]].forEach(function(a){var p=ps[a[0]],el=$(a[1]);
     el.className="pl-ok";el.textContent=p?("Nastaveno: "+(p.name&&p.name!="vlastní místo"?p.name+" ":"")+"("+p.lat.toFixed(5)+", "+p.lng.toFixed(5)+")"):"Nenastaveno. Vlož souřadnice nebo odkaz z Mapy.cz a potvrď.";});
-  $("pl-home-clear").hidden=!ps.home;
+  $("pl-home-clear").hidden=!ps.home;$("pl-work-clear").hidden=!ps.work;
   $("wk").innerHTML=[1,2,3,4,5].map(function(w){var v=ps.sched[w]||"work";return '<button type="button" data-wd="'+w+'">'+DAYS[w]+'<b>'+(v=="home"?"Domov":"Práce")+'</b></button>'}).join('');
   applyTheme();
 }
@@ -453,6 +462,7 @@ function bindPlace(which){
 }
 bindPlace("work");bindPlace("home");
 $("pl-home-clear").addEventListener("click",function(){ps.home=null;changeP()});
+$("pl-work-clear").addEventListener("click",function(){ps.work=null;changeP()});
 $("wk").addEventListener("click",function(ev){var b=ev.target.closest("[data-wd]");if(!b)return;var w=b.dataset.wd;ps.sched[w]=(ps.sched[w]=="home")?"work":"home";changeP()});
 document.querySelectorAll("[data-theme-set]").forEach(function(b){b.addEventListener("click",function(){ps.theme=b.dataset.themeSet;saveP();applyTheme()})});
 
@@ -464,11 +474,11 @@ document.querySelectorAll("[data-druh]").forEach(function(b){b.addEventListener(
 $("maxk").addEventListener("input",function(){st.maxk=+this.value;change()});
 $("reset").addEventListener("click",function(){st=clone(DEF);change()});
 $("days").addEventListener("click",function(ev){var b=ev.target.closest("[data-day]");if(b){sel=+b.dataset.day;render()}});
-$("hiddenlist").addEventListener("click",function(ev){var b=ev.target.closest("[data-unhide]");if(b){delete ps.hide[b.dataset.unhide];changeP()}});
+$("hiddenlist").addEventListener("click",function(ev){var b=ev.target.closest("[data-unhide]");if(b){delete HIDE()[b.dataset.unhide];changeP()}});
 $("out").addEventListener("click",function(ev){
   var p=ev.target.closest(".pick");if(p){if(!st.soupPick||typeof st.soupPick!="object")st.soupPick={};st.soupPick[p.dataset.r]=p.dataset.s;change();return}
-  var f=ev.target.closest("[data-fav]");if(f){var s=f.dataset.fav;if(ps.fav[s])delete ps.fav[s];else ps.fav[s]=1;changeP();return}
-  var h=ev.target.closest("[data-hide]");if(h){ps.hide[h.dataset.hide]=1;changeP();return}
+  var f=ev.target.closest("[data-fav]");if(f){var s=f.dataset.fav,fv=FAV();if(fv[s])delete fv[s];else fv[s]=1;changeP();return}
+  var h=ev.target.closest("[data-hide]");if(h){HIDE()[h.dataset.hide]=1;changeP();return}
   var b=ev.target.closest("[data-sort]");if(b){st.sort=b.dataset.sort;change()}
 });
 renderSettings();
