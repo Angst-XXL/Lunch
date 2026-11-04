@@ -20,8 +20,9 @@ Ověř, že menu je pro dnešní datum (první blok <div class='menicka'> s nadp
 
 6) Pořadí restaurací podle polohy: pondělí až středa od Vavrečkova 7074 (Prostě a Pilsner Urquell první, pak podle vzdálenosti), čtvrtek a pátek od Podlesí 5375 (domov). Souřadnice restaurací jsou ve stránkách v kódu mapy (maps.LatLng).
 
-7) Data: blok DATA nahraď tímto obsahem (komentáře v bloku ponech):
+7) Data: blok DATA nahraď tímto obsahem (komentáře v bloku ponech). AKT vyplň vždy, i když se jídla od včerejška nezměnila; podle něj uživatel pozná, že je přehled aktuální:
 var DEN="<den a datum malými, např. středa 4. 11. 2026>", SUB="<Dnes <den>, kancelář.> nebo <Dnes <den>, doma.>";
+var AKT="<skutečný čas, kdy jsi menu stáhl a zkontroloval, ISO s pražským posunem, např. 2026-11-05T07:21:00+01:00 (v létě +02:00); zjisti ho příkazem TZ=Europe/Prague date -Iseconds>";
 var R=[ ...restaurace... ];
 Restaurace: [název, adresa, url, tip, [řádky]].
 Řádek: [název, cena, kcal, B, S, T, typ, druh, smažené]
