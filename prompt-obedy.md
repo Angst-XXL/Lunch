@@ -12,7 +12,7 @@
 - U Ševce, Kvítková 4323: https://www.menicka.cz/5492-u-sevce.html
 - Radegastovna Rex, Okružní 4701: https://www.menicka.cz/3538-radegastovna-rex.html
 - U Barcuchů (jídelna), Mokrá 5215: https://www.menicka.cz/3027-u-barcuchu.html
-Ověř, že menu je pro dnešní datum (první blok <div class='menicka'> s nadpisem <div class='nadpis'>, např. "Úterý 3.11.2026"). Jídla si nevymýšlej. Pokud restaurace dnes menu nemá, dej jí prázdný seznam řádků (stránka sama napíše „Dnes menu nemá“). Názvy jídel ber ze stránek, čísla alergenů a pořadová čísla vynech, poznámky o nápojích a obalech nevypisuj. Polévky bez ceny označ "v menu".
+Ověř, že menu je pro dnešní datum (první blok <div class='menicka'> s nadpisem <div class='nadpis'>, např. "Úterý 3.11.2026"). Jídla si nevymýšlej. Pokud restaurace dnes menu nemá, dej jí prázdný seznam řádků (stránka sama napíše „Dnes menu nemá“). Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích a obalech nevypisuj. Pořadové číslo jídla ze zdrojové stránky (před názvem, např. „3.“) uveď jako 10. pole řádku (uživatel podle něj objednává); polévky, saláty, tip šéfa a jídla bez čísla mají 0. Do názvu číslo nepiš. U Barcuchů mají minutky vlastní čísla (např. 8–14), ty ponech; řádek „Obědové minutky od…“ je jen nadpis, ne jídlo. Polévky bez ceny označ "v menu".
 
 4) Pro každé jídlo včetně polévek odhadni kcal a bílkoviny/sacharidy/tuky v gramech (restaurace je neuvádějí, jsou to odhady).
 
@@ -25,12 +25,13 @@ var DEN="<den a datum malými, např. středa 4. 11. 2026>", SUB="<Dnes <den>, k
 var AKT="<skutečný čas, kdy jsi menu stáhl a zkontroloval, ISO s pražským posunem, např. 2026-11-05T07:21:00+01:00 (v létě +02:00); zjisti ho příkazem TZ=Europe/Prague date -Iseconds>";
 var R=[ ...restaurace... ];
 Restaurace: [název, adresa, url, tip, [řádky]].
-Řádek: [název, cena, kcal, B, S, T, typ, druh, smažené]
+Řádek: [název, cena, kcal, B, S, T, typ, druh, smažené, číslo menu]
 - název: BEZ ikon a emoji (ikony ✅ 🥣 🌱 🐟 doplní stránka sama)
 - typ: "b" nejlepší, "s" polévka, "p" salát nebo příloha samostatně, "" hlavní jídlo
 - druh: "k" drůbež: kuřecí, krůtí, kachna, husa (i slepičí vývar), "v" vepřové (i uzenina, slanina, šunka, špek, karbanátek, směs), "h" hovězí, "z" bez masa, "r" ryba. U jídla s více druhy masa dej hlavní maso.
 - smažené: 1 když je HLAVNÍ složka obalovaná nebo smažená (řízek, smažený sýr, cordon bleu, stripsy, v bramboráku, Kentucky, panko), jinak 0. Smažené přílohy (hranolky, krokety, smažená cibulka) se nepočítají, ty jde vyměnit.
-Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0]
+- číslo menu: pořadové číslo jídla na zdrojové stránce, 0 = bez čísla
+Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0,4]
 
 8) Ulož výsledek jako obedy-YYYY-MM-DD.html do pracovního adresáře. Před zveřejněním ověř, že stránka jde otevřít bez chyb ve skriptu (např. v Playwrightu, bez chyb v konzoli).
 

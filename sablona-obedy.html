@@ -56,10 +56,11 @@ input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
 .tip{padding:8px 14px;font-size:.85rem;background:var(--best-bg);color:var(--best)}
 .empty{padding:10px 14px;font-size:.85rem;color:var(--muted)}
 .hid{padding:6px 14px;font-size:.75rem;color:var(--muted);border-top:1px solid var(--line)}
-.dish{display:grid;grid-template-columns:1fr auto;gap:2px 10px;padding:10px 14px;border-top:1px solid var(--line)}
+.dish{display:grid;grid-template-columns:auto 1fr auto;gap:2px 10px;padding:10px 14px;border-top:1px solid var(--line)}
 .cols+.dish{border-top:0}
 .name{font-weight:600;min-width:0}
 .from{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.num{font-family:var(--f-num);font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
 .price{font-family:var(--f-num);font-size:.85rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .m{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 12px;font-family:var(--f-num);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .m b{color:var(--fg);font-weight:500}
@@ -71,13 +72,13 @@ input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
 .cols button{border:0;background:none;padding:0;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer;text-align:inherit}
 .cols button[aria-pressed="true"]{color:var(--fg);font-weight:700}
 @media(min-width:760px){
-  .cols,.dish{display:grid;grid-template-columns:minmax(0,1fr) 72px 56px 48px 48px 48px 72px;gap:0 8px;align-items:baseline}
+  .cols,.dish{display:grid;grid-template-columns:40px minmax(0,1fr) 72px 56px 48px 48px 48px 72px;gap:0 8px;align-items:baseline}
   .cols{padding:6px 14px;font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);border-bottom:1px solid var(--line)}
-  .cols > *:nth-child(n+2){text-align:right}
+  .cols > *:nth-child(n+3){text-align:right}
   .m{display:contents}
   .price{order:2}.m span{text-align:right;order:3}
   .m span::before{content:none}
-  .name{order:1}
+  .name{order:1}.num{order:0}
 }
 @media(max-width:759px){.cols{display:none}}
 </style>
@@ -94,6 +95,7 @@ input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
   <div class="row"><label class="lbl" for="sort">Seřadit</label>
     <select id="sort">
       <option value="def">Výchozí (podle restaurace)</option>
+      <option value="num">Číslo menu ↑</option>
       <option value="ratio">Bílkoviny na 100 kcal ↓</option>
       <option value="kcal">kcal ↑</option>
       <option value="b">Bílkoviny ↓</option>
@@ -126,7 +128,8 @@ input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
 </main>
 <script>
 // ===== DATA:START (ranní úloha mění jen tento blok) =====
-// Řádek: [název bez ikon, cena, kcal, B, S, T, typ, druh, smažené]
+// Řádek: [název bez ikon, cena, kcal, B, S, T, typ, druh, smažené, číslo menu]
+//  číslo menu: pořadové číslo jídla na zdrojové stránce (pro objednávání); 0 = bez čísla (polévky, saláty, tip šéfa)
 //  typ: "b" nejlepší, "s" polévka, "p" salát/příloha, "" hlavní jídlo
 //  druh: "k" drůbež (kuřecí, krůtí, kachna, husa), "v" vepřové (i uzenina, slanina, šunka), "h" hovězí, "z" bez masa, "r" ryba
 //  smažené: 1 = obalované/smažené hlavní jídlo, 0 = ne
@@ -167,7 +170,8 @@ var SORTS={
   b:function(a,b){return b[3]-a[3]},
   s:function(a,b){return a[4]-b[4]},
   t:function(a,b){return a[5]-b[5]},
-  price:function(a,b){return price(a)-price(b)}
+  price:function(a,b){return price(a)-price(b)},
+  num:function(a,b){return (a[9]||999)-(b[9]||999)}
 };
 function side(d){return d[6]=="s"||d[6]=="p"}
 function ok(d){
@@ -185,14 +189,14 @@ function icons(d){
   return (d[6]=="b"?"✅ ":"")+(d[6]=="s"?"🥣 ":"")+(d[7]=="z"?"🌱 ":"")+(d[7]=="r"?"🐟 ":"");
 }
 function cols(){
-  var c=[["Jídlo","def"],["Cena","price"],["kcal","kcal"],["B","b"],["S","s"],["T","t"],["B/100","ratio"]];
+  var c=[["Č.","num"],["Jídlo","def"],["Cena","price"],["kcal","kcal"],["B","b"],["S","s"],["T","t"],["B/100","ratio"]];
   return '<div class="cols">'+c.map(function(x,i){
-    return '<button type="button" data-sort="'+x[1]+'" aria-pressed="'+(st.sort==x[1])+'">'+x[0]+(st.sort==x[1]&&i?(x[1]=="b"||x[1]=="ratio"?" ↓":" ↑"):"")+'</button>';
+    return '<button type="button" data-sort="'+x[1]+'" aria-pressed="'+(st.sort==x[1])+'">'+x[0]+(st.sort==x[1]&&i>1?(x[1]=="b"||x[1]=="ratio"?" ↓":" ↑"):"")+'</button>';
   }).join('')+'</div>';
 }
 function row(d,from){
   var cls=d[6]=="b"?"best":d[7]=="r"?"fish":d[6]=="s"?"soup":"";
-  return '<div class="dish '+cls+'"><div class="name">'+icons(d)+e(d[0])+(from?'<span class="from">'+e(from)+'</span>':'')+'</div><div class="price">'+e(d[1])+'</div>'+
+  return '<div class="dish '+cls+'"><div class="num">'+(d[9]?d[9]+'.':'')+'</div><div class="name">'+icons(d)+e(d[0])+(from?'<span class="from">'+e(from)+'</span>':'')+'</div><div class="price">'+e(d[1])+'</div>'+
   '<div class="m"><span data-l="kcal"><b>'+d[2]+'</b></span><span data-l="B"><b>'+d[3]+'</b></span><span data-l="S"><b>'+d[4]+'</b></span><span data-l="T"><b>'+d[5]+'</b></span><span data-l="B/100 kcal"><b>'+ratio(d).toFixed(1)+'</b></span></div></div>';
 }
 function render(){
@@ -212,7 +216,7 @@ function render(){
       var best=vis.filter(function(d){return d[6]=="b"});
       var mains=sorted(vis.filter(function(d){return d[6]!="b"&&!side(d)}),st.sort);
       var sides=sorted(vis.filter(side),st.sort);
-      var list=best.concat(mains,sides);
+      var list=st.sort=="num"?sorted(vis,"num"):best.concat(mains,sides);
       var hidden=items.length-vis.length;
       return '<section class="rest"><header><h2><a style="color:inherit;text-decoration:none" href="'+e(r[2])+'">'+e(r[0])+'</a></h2><div class="addr">'+e(r[1])+'</div></header>'+
         (r[3]?'<div class="tip">'+e(r[3])+'</div>':'')+
@@ -288,3 +292,4 @@ render();
 })();
 })();
 </script>
+
