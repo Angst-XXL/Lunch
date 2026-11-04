@@ -1,4 +1,4 @@
-Úloha: každý pracovní den ráno (Europe/Prague, přehled má být hotový do 7:30) vytvoř přehled obědů ve Zlíně na dnešek a na další pracovní den a zveřejni ho na stálé adrese https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK (uživatel ji má v záložkách Safari). Odpověď piš česky.
+Úloha: každý pracovní den ráno (Europe/Prague, přehled má být hotový do 7:30) vytvoř přehled obědů ve Zlíně na dnešek a na další pracovní den a zveřejni ho na stálé adrese https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK (uživatel ji má v záložkách Safari) a jako kopii na GitHub Pages https://angst-xxl.github.io/Lunch/. Odpověď piš česky.
 
 1) Svátky: pokud je dnes státní svátek v ČR nebo víkend, napiš jen "Dnes je volno", pošli oznámení podle bodu 11 a skonči. Stránku nepřepisuj.
 
@@ -40,7 +40,9 @@ Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,
 
 9) Zveřejni: Artifact publish s file_path dnešního souboru, url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK a label s dnešním datem (např. "5. 11. 2026"), bez icon a bez capabilities (stránka si oprávnění ponechá). NIKDY nevytvářej nový Artifact bez url. Pokud zveřejnění selže, pošli soubor nástrojem SendUserFile (display: render) a napiš proč.
 
-10) Na konec napiš krátké shrnutí: odkaz na stránku, doporučené jídlo (s číslem menu) v každé restauraci pro dnešek a které restaurace dnes nebo další pracovní den menu nemají.
+9b) GitHub Pages (záložní veřejná kopie; Artifact z bodu 9 má přednost): zavolej nástroj add_repo (mcp__claude-code-remote__add_repo, načti přes ToolSearch "add_repo") s owner "Angst-XXL", repo "Lunch", access "push" a naklonuj repo podle jeho odpovědi. Přepni se na větev claude/new-session-w07zdq (git fetch origin claude/new-session-w07zdq && git checkout claude/new-session-w07zdq). Zkopíruj do repa dnešní soubor obedy-YYYY-MM-DD.html, spusť v repu "python3 pages-index.py obedy-YYYY-MM-DD.html" (vyrobí index.html), commitni oba soubory se zprávou "Obědy D. M. RRRR" a pushni přesně na tuto větev: git push origin claude/new-session-w07zdq (uživatel to výslovně povoluje; při chybě sítě zkus až 4× s čekáním 2, 4, 8, 16 s). Na jinou větev nepushuj a nic jiného v repu neměň. Když tento krok selže, Artifact nech, jak je, a napiš do shrnutí proč.
+
+10) Na konec napiš krátké shrnutí: odkaz na stránku (claude.ai i GitHub Pages), doporučené jídlo (s číslem menu) v každé restauraci pro dnešek a které restaurace dnes nebo další pracovní den menu nemají.
 
 11) Oznámení: úplně nakonec zavolej nástroj PushNotification (načti ho přes ToolSearch "select:PushNotification") se zprávou do 200 znaků, např. "Obědy 5. 11. hotové. Doporučené: č. 1 kuřecí roláda se špenátem (U Ševce). claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK". Pošli ho i v den volna ("Dnes je volno"). Pokud nástroj hlásí, že oznámení nebylo odesláno, napiš to do shrnutí.
 
