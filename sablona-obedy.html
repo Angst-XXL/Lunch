@@ -60,6 +60,10 @@ input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
 .cols+.dish{border-top:0}
 .name{font-weight:600;min-width:0}
 .from{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.combo{display:block;font-weight:400;font-size:.75rem;color:var(--muted);font-family:var(--f-num);font-variant-numeric:tabular-nums}
+.pick{margin-left:6px;border:1px solid var(--line);background:transparent;border-radius:99px;padding:1px 8px;font-size:.72rem;cursor:pointer;font-weight:400;color:var(--fg);vertical-align:1px}
+.pick[aria-pressed="true"]{background:var(--on);color:var(--on-fg);border-color:var(--on)}
+.hint{font-size:.75rem;color:var(--muted)}
 .num{font-family:var(--f-num);font-weight:600;color:var(--fg);font-variant-numeric:tabular-nums}
 .price{font-family:var(--f-num);font-size:.85rem;color:var(--muted);text-align:right;font-variant-numeric:tabular-nums}
 .m{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 12px;font-family:var(--f-num);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
@@ -115,6 +119,11 @@ input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
     <button type="button" class="f" id="nofried" title="Obalované nebo smažené hlavní jídlo. Přílohu (hranolky) si můžeš vyměnit, proto se nepočítá.">Smažené</button>
     <button type="button" class="f" id="nosoup">Polévky a saláty</button>
   </div>
+  <div class="row"><span class="lbl">Oběd</span>
+    <button type="button" class="f" id="addsoup">+ 🥣 Polévka</button>
+    <button type="button" class="f" id="addsalad">+ Salát</button>
+    <span class="hint">přičte k hlavním jídlům</span>
+  </div>
   <div class="row"><label class="lbl" for="maxk">Max. kcal</label>
     <input type="range" id="maxk" min="300" max="1400" step="50">
     <output class="kv" id="maxk-out" for="maxk"></output>
@@ -142,7 +151,7 @@ var R=[];
 
 (function(){
 var KEY="obedy-filtry-v1";
-var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,r:0},nofried:0,nosoup:0,maxk:1400};
+var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,r:0},nofried:0,nosoup:0,maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
 var st=JSON.parse(JSON.stringify(DEF));
 try{var sv=JSON.parse(localStorage.getItem(KEY)||"null");if(sv&&sv.druh){for(var k in DEF)if(k in sv)st[k]=sv[k];}}catch(err){}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(err){}}
@@ -188,29 +197,56 @@ function sorted(list,key){
 function icons(d){
   return (d[6]=="b"?"✅ ":"")+(d[6]=="s"?"🥣 ":"")+(d[7]=="z"?"🌱 ":"")+(d[7]=="r"?"🐟 ":"");
 }
+function lightest(list){return list.slice().sort(function(a,b){return a[2]-b[2]})[0]}
+function isSalad(d){return d[6]=="p"&&/salát/i.test(d[0])}
+function short(s){s=String(s).replace(/\s*\(.*?\)\s*/g," ").trim();return s.length>26?s.slice(0,25).trim()+"…":s}
+function extras(r){
+  var soups=r[4].filter(function(d){return d[6]=="s"}),sal=r[4].filter(isSalad),x={soup:null,salad:null,noSoup:false,noSalad:false};
+  if(st.addsoup){
+    if(soups.length){var p=st.soupPick&&st.soupPick[r[0]];x.soup=soups.filter(function(d){return d[0]==p})[0]||lightest(soups)}
+    else x.noSoup=true;
+  }
+  if(st.addsalad){if(sal.length)x.salad=lightest(sal);else x.noSalad=true}
+  return x;
+}
+function prep(r){
+  var x=extras(r);
+  return r[4].map(function(d,i){
+    var o=d.slice();o.i=i;o.rn=r[0];
+    if(d[6]=="s"&&st.addsoup)o.picked=(x.soup&&x.soup[0]==d[0]);
+    if(side(d)||!(st.addsoup||st.addsalad))return o;
+    var add=[x.soup,x.salad].filter(Boolean),parts=["jídlo "+d[2]];
+    add.forEach(function(a){o[2]+=a[2];o[3]+=a[3];o[4]+=a[4];o[5]+=a[5];parts.push("+ "+short(a[0])+" "+a[2])});
+    if(add.length){var p=price(d);add.forEach(function(a){p+=price(a)});if(p)o[1]=p+" Kč";parts.push("= "+o[2]+" kcal")}
+    if(x.noSoup)parts.push("(polévku nemá)");
+    if(x.noSalad)parts.push("(salát nemá)");
+    o.combo=parts.join(" ");
+    return o;
+  });
+}
 function cols(){
-  var c=[["Č.","num"],["Jídlo","def"],["Cena","price"],["kcal","kcal"],["B","b"],["S","s"],["T","t"],["B/100","ratio"]];
+  var c=[["Č.","num"],["Jídlo"+(st.addsoup?" + polévka":"")+(st.addsalad?" + salát":""),"def"],["Cena","price"],["kcal","kcal"],["B","b"],["S","s"],["T","t"],["B/100","ratio"]];
   return '<div class="cols">'+c.map(function(x,i){
     return '<button type="button" data-sort="'+x[1]+'" aria-pressed="'+(st.sort==x[1])+'">'+x[0]+(st.sort==x[1]&&i>1?(x[1]=="b"||x[1]=="ratio"?" ↓":" ↑"):"")+'</button>';
   }).join('')+'</div>';
 }
 function row(d,from){
   var cls=d[6]=="b"?"best":d[7]=="r"?"fish":d[6]=="s"?"soup":"";
-  return '<div class="dish '+cls+'"><div class="num">'+(d[9]?d[9]+'.':'')+'</div><div class="name">'+icons(d)+e(d[0])+(from?'<span class="from">'+e(from)+'</span>':'')+'</div><div class="price">'+e(d[1])+'</div>'+
+  return '<div class="dish '+cls+'"><div class="num">'+(d[9]?d[9]+'.':'')+'</div><div class="name">'+icons(d)+e(d[0])+(d.picked!=null?'<button type="button" class="pick" data-r="'+e(d.rn)+'" data-s="'+e(d[0])+'" aria-pressed="'+d.picked+'">'+(d.picked?'✓ počítá se':'počítat tuto')+'</button>':'')+(from?'<span class="from">'+e(from)+'</span>':'')+(d.combo?'<span class="combo">'+e(d.combo)+'</span>':'')+'</div><div class="price">'+e(d[1])+'</div>'+
   '<div class="m"><span data-l="kcal"><b>'+d[2]+'</b></span><span data-l="B"><b>'+d[3]+'</b></span><span data-l="S"><b>'+d[4]+'</b></span><span data-l="T"><b>'+d[5]+'</b></span><span data-l="B/100 kcal"><b>'+ratio(d).toFixed(1)+'</b></span></div></div>';
 }
 function render(){
   var total=0,shown=0,html="";
   if(st.view=="all"){
     var all=[];
-    R.forEach(function(r){r[4].forEach(function(d,i){total++;if(ok(d)){var x=d.slice();x.i=all.length;x.r=r[0];all.push(x)}})});
+    R.forEach(function(r){prep(r).forEach(function(x){total++;if(ok(x)){x.i=all.length;x.r=r[0];all.push(x)}})});
     shown=all.length;
     var key=st.sort=="def"?"ratio":st.sort;
     all=sorted(all.filter(function(d){return !side(d)}),key).concat(sorted(all.filter(side),key));
     html='<section class="rest">'+cols()+(all.length?all.map(function(d){return row(d,d.r)}).join(''):'<div class="empty">Filtrům dnes neodpovídá žádné jídlo.</div>')+'</section>';
   }else{
     html=R.map(function(r){
-      var items=r[4].map(function(d,i){var x=d.slice();x.i=i;return x});
+      var items=prep(r);
       total+=items.length;
       var vis=items.filter(ok);shown+=vis.length;
       var best=vis.filter(function(d){return d[6]=="b"});
@@ -238,6 +274,8 @@ function sync(){
   document.querySelectorAll("[data-druh]").forEach(function(b){b.setAttribute("aria-pressed",!!st.druh[b.dataset.druh])});
   $("nofried").setAttribute("aria-pressed",!!st.nofried);
   $("nosoup").setAttribute("aria-pressed",!!st.nosoup);
+  $("addsoup").setAttribute("aria-pressed",!!st.addsoup);
+  $("addsalad").setAttribute("aria-pressed",!!st.addsalad);
   $("maxk").value=st.maxk;
   $("maxk-out").textContent=st.maxk>=1400?"bez limitu":"≤ "+st.maxk;
 }
@@ -247,9 +285,11 @@ $("sort").addEventListener("change",function(){st.sort=this.value;change()});
 document.querySelectorAll("[data-druh]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.druh;st.druh[k]=st.druh[k]?0:1;change()})});
 $("nofried").addEventListener("click",function(){st.nofried=st.nofried?0:1;change()});
 $("nosoup").addEventListener("click",function(){st.nosoup=st.nosoup?0:1;change()});
+$("addsoup").addEventListener("click",function(){st.addsoup=st.addsoup?0:1;change()});
+$("addsalad").addEventListener("click",function(){st.addsalad=st.addsalad?0:1;change()});
 $("maxk").addEventListener("input",function(){st.maxk=+this.value;change()});
 $("reset").addEventListener("click",function(){st=JSON.parse(JSON.stringify(DEF));change()});
-$("out").addEventListener("click",function(ev){var b=ev.target.closest("[data-sort]");if(b){st.sort=b.dataset.sort;change()}});
+$("out").addEventListener("click",function(ev){var p=ev.target.closest(".pick");if(p){if(!st.soupPick||typeof st.soupPick!="object")st.soupPick={};st.soupPick[p.dataset.r]=p.dataset.s;change();return}var b=ev.target.closest("[data-sort]");if(b){st.sort=b.dataset.sort;change()}});
 render();
 
 /* Ruční aktualizace: spustí ranní naplánovanou úlohu přes konektor Claude Code Remote */

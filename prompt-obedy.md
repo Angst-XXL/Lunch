@@ -2,7 +2,7 @@
 
 1) Svátky: pokud je dnes státní svátek v ČR nebo víkend, napiš jen "Dnes je volno", pošli oznámení podle bodu 11 a skonči. Stránku nepřepisuj.
 
-2) Šablona: zavolej nástroj Artifact s action "read" a url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK. Vrátí aktuální HTML stránky a uloží ho do souboru. Tato stránka JE šablona: obsahuje filtry, třídění, sloupec s číslem menu, tlačítko pro ruční aktualizaci a vykreslovací kód. Neměň v ní nic kromě bloku mezi řádky "// ===== DATA:START" a "// ===== DATA:END =====". Pokud read selže, nic nevymýšlej, napiš proč a skonči.
+2) Šablona: zavolej nástroj Artifact s action "read" a url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK. Vrátí aktuální HTML stránky a uloží ho do souboru. Tato stránka JE šablona: obsahuje filtry, třídění, sloupec s číslem menu, přepínače „+ Polévka / + Salát“, tlačítko pro ruční aktualizaci a vykreslovací kód. Neměň v ní nic kromě bloku mezi řádky "// ===== DATA:START" a "// ===== DATA:END =====". Pokud read selže, nic nevymýšlej, napiš proč a skonči.
 
 3) Stáhni dnešní menu z těchto stránek (každá restaurace má vlastní stránku, přehled města zlin.html je nespolehlivý, nepoužívej ho):
 - Prostě Restaurace, Vavrečkova 7074: https://www.menicka.cz/8250-proste-restaurace.html
@@ -12,11 +12,11 @@
 - U Ševce, Kvítková 4323: https://www.menicka.cz/5492-u-sevce.html
 - Radegastovna Rex, Okružní 4701: https://www.menicka.cz/3538-radegastovna-rex.html
 - U Barcuchů (jídelna), Mokrá 5215: https://www.menicka.cz/3027-u-barcuchu.html
-Ověř, že menu je pro dnešní datum (první blok <div class='menicka'> s nadpisem <div class='nadpis'>, např. "Úterý 3.11.2026"). Jídla si nevymýšlej. Pokud restaurace dnes menu nemá, dej jí prázdný seznam řádků (stránka sama napíše „Dnes menu nemá“). Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích a obalech nevypisuj. Pořadové číslo jídla ze zdrojové stránky (před názvem, např. „3.“) uveď jako 10. pole řádku (uživatel podle něj objednává); polévky, saláty, tip šéfa a jídla bez čísla mají 0. Do názvu číslo nepiš. U Barcuchů mají minutky vlastní čísla (např. 8–14), ty ponech; řádek „Obědové minutky od…“ je jen nadpis, ne jídlo. Polévky bez ceny označ "v menu".
+Ověř, že menu je pro dnešní datum (první blok <div class='menicka'> s nadpisem <div class='nadpis'>, např. "Úterý 3.11.2026"). Jídla si nevymýšlej. Pokud restaurace dnes menu nemá, dej jí prázdný seznam řádků (stránka sama napíše „Dnes menu nemá“). Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích a obalech nevypisuj. Pořadové číslo jídla ze zdrojové stránky (před názvem, např. „3.“) uveď jako 10. pole řádku (uživatel podle něj objednává); polévky, saláty, tip šéfa a jídla bez čísla mají 0. Do názvu číslo nepiš. U Barcuchů mají minutky vlastní čísla (např. 8–14), ty ponech; řádek „Obědové minutky od…“ je jen nadpis, ne jídlo. Polévky bez ceny označ "v menu"; "v menu" dej i polévce, o které restaurace píše, že je v ceně denního menu (např. „Celý měsíc polévka v ceně denního menu“), pokud ta poznámka platí pro aktuální měsíc. Saláty, které restaurace nabízí k menu, zapiš jako řádek typu "p" se slovem „salát“ v názvu, i když jsou na stránce jen jako poznámka (např. Budvarka „Miska salátu dle denní nabídky k menu 35 Kč“ → "Miska salátu dle denní nabídky (k menu)"); stránka je přičítá k hlavním jídlům, když si uživatel zapne „+ Salát“. Dezerty a jiné přílohy bez slova „salát“ se nepřičítají.
 
 4) Pro každé jídlo včetně polévek odhadni kcal a bílkoviny/sacharidy/tuky v gramech (restaurace je neuvádějí, jsou to odhady).
 
-5) V každé restauraci označ jedno nejvhodnější jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin (cíl: zhubnout kortizolové břicho). Polévka ani salát/příloha to být nemůže. Ryba nikdy nesmí být nejlepší, uživatel ryby nejí. Do pole tip dej krátkou radu (např. zaměnit přílohu za salát).
+5) V každé restauraci označ jedno nejvhodnější jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin (cíl: zhubnout kortizolové břicho). Polévka ani salát/příloha to být nemůže. Ryba nikdy nesmí být nejlepší, uživatel ryby nejí. Do pole tip dej krátkou radu (např. zaměnit přílohu za salát); když má restaurace víc polévek, doporuč v tipu tu lehčí (uživatel si polévku dává většinou k obědu).
 
 6) Pořadí restaurací podle polohy: pondělí až středa od Vavrečkova 7074 (Prostě a Pilsner Urquell první, pak podle vzdálenosti), čtvrtek a pátek od Podlesí 5375 (domov). Souřadnice restaurací jsou ve stránkách v kódu mapy (maps.LatLng).
 
