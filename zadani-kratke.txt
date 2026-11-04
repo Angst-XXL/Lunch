@@ -1,0 +1,1 @@
+Proveď úlohu přesně podle souboru prompt-obedy.md v připojeném repozitáři Angst-XXL/Lunch. Nejdřív v jeho pracovní kopii spusť: git fetch origin claude/new-session-w07zdq && git checkout claude/new-session-w07zdq. Pak si soubor prompt-obedy.md přečti celý a postupuj podle všech jeho bodů. Odpovídej česky.
