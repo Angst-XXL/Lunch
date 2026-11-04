@@ -27,8 +27,9 @@ h1{font-size:1.6rem;margin:0;text-wrap:balance}
 .upd{margin:6px 0 0;font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .updrow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 10px;margin-top:6px}
 .updrow .upd{margin:0}
-.rbtn{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 12px;cursor:pointer;font-size:.85rem}
+.rbtn{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:4px 12px;cursor:pointer;font-size:.85rem;color:var(--fg);text-decoration:none;display:inline-block}
 .rbtn:disabled{opacity:.6;cursor:default}
+.rbtn[hidden],[hidden]{display:none!important}
 .rmsg{margin:6px 0 0;font-size:.85rem;color:var(--muted)}
 .rmsg.err{color:var(--warn)}
 .upd.stale{color:var(--warn);background:var(--warn-bg);padding:6px 10px;border-radius:8px;font-weight:600}
@@ -120,7 +121,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 <main>
 <div><h1 id="h1">Obědy Zlín</h1>
 <p class="sub" id="sub"></p>
-<div class="updrow"><p class="upd" id="upd"></p><button type="button" class="rbtn" id="refresh" hidden>↻ Aktualizovat teď</button></div>
+<div class="updrow"><p class="upd" id="upd"></p><a class="rbtn" id="refresh" hidden href="https://claude.ai/code/routines/trig_01YUMfvGqRm9kLhMgX3tjxCn" target="_blank" rel="noopener" title="Otevře naplánovanou úlohu, tam ji spustíš">↻ Aktualizovat teď</a></div>
 <p class="rmsg" id="rmsg" role="status" hidden></p></div>
 
 <div class="days" id="days" role="group" aria-label="Den"></div>
@@ -614,48 +615,17 @@ $("out").addEventListener("click",function(ev){
 renderSettings();
 render();
 
-/* Ruční aktualizace: spustí naplánovanou úlohu vlastníka přes konektor Claude Code Remote; ostatním se tlačítko nezobrazí */
+/* Ruční aktualizace: odkaz na naplánovanou úlohu vlastníka (spustí se tam tlačítkem); ostatním se nezobrazí */
 (function(){
-  var TRIG="trig_01YUMfvGqRm9kLhMgX3tjxCn", KEY2="obedy-refresh-at", KEY3="obedy-sync-pending", WAIT=4*60*1000;
-  var curAKT=(typeof AKT=="string")?AKT:"";
-  function getPend(){try{return JSON.parse(localStorage.getItem(KEY3)||"null")}catch(e){return null}}
-  function setPend(v){try{if(v)localStorage.setItem(KEY3,JSON.stringify(v));else localStorage.removeItem(KEY3)}catch(e){}}
   var btn=$("refresh"), msg=$("rmsg");
-  function say(t,err){msg.textContent=t;msg.hidden=!t;msg.classList.toggle("err",!!err)}
-  function last(){try{return +sessionStorage.getItem(KEY2)||0}catch(e){return 0}}
-  function mark(){try{sessionStorage.setItem(KEY2,String(Date.now()))}catch(e){}}
-  function busy(){
-    var left=WAIT-(Date.now()-last());
-    if(left>0){btn.disabled=true;btn.textContent="↻ Aktualizace běží…";setTimeout(function(){btn.disabled=false;btn.textContent="↻ Aktualizovat teď"},left);return true}
-    return false;
-  }
+  function say(t){msg.textContent=t;msg.hidden=!t}
+  try{localStorage.removeItem("obedy-sync-pending")}catch(e){}
   if(!window.claude||!window.claude.use)return;
   window.claude.use("user").then(function(u){return u?u.isOwner():false}).catch(function(){return false}).then(function(owner){
     if(!owner)return;
-    window.claude.use("mcp").then(function(mcp){
-    if(!mcp)return;
     btn.hidden=false;
-    setPend(null); /* starý příznak synchronizace už není potřeba */
-    if(busy())say("Aktualizace už běží. Stránka se sama obnoví, až budou nová data.");
     btn.addEventListener("click",function(){
-      if(btn.disabled)return;
-      btn.disabled=true;btn.textContent="↻ Spouštím…";say("");
-      mcp.callTool("Claude Code Remote","fire_trigger",{trigger_id:TRIG,
-        text:"Ruční aktualizace z tlačítka na stránce. Uživatel chce čerstvá data hned. Proveď ji i o víkendu nebo ve svátek, pokud restaurace mají menu na dnešek nebo další pracovní den; jinak napiš proč a stránku nepřepisuj. AKT vyplň vždy."},
-        {cache:false}).then(function(){
-        mark();busy();
-        say("Aktualizace se spustila. Za 2–3 minuty se stránka sama obnoví s novými daty. Za pár minut se aktualizuje i kopie na github.io.");
-      },function(err){
-        var c=err&&err.code;btn.disabled=false;btn.textContent="↻ Aktualizovat teď";
-        if(c=="approval_required")say("Spuštění potřebuje tvoje schválení. Klikni znovu a v dialogu ho povol.",1);
-        else if(c=="not_in_manifest")say("Tlačítko není pro tuto stránku povolené. Povol konektor Claude Code Remote v menu stránky Oprávnění.",1);
-        else if(c=="needs_reauth"||c=="server_not_connected")say("Konektor Claude Code Remote není připojený. Připoj ho v claude.ai → Nastavení → Konektory.",1);
-        else if(c=="blocked_by_policy")say("Spuštění blokuje nastavení tvé organizace.",1);
-        else if(c=="tool_error")say("Úlohu se nepodařilo spustit: "+String(err.message||"").slice(0,160),1);
-        else if(c=="not_granted"||c=="capability_disabled"||c=="capability_removed"){btn.hidden=true;say("")}
-        else{mark();busy();say("Nevím jistě, jestli se aktualizace spustila. Počkej pár minut; když se stránka neobnoví, zkus to znovu.",1)}
-      });
-    });
+      say("Otevřela se úloha „Obědy Zlín + GitHub“. Klepni tam na spuštění. Asi za 3–5 minut se aktualizuje tahle stránka i angst-xxl.github.io/Lunch.");
     });
   });
 })();
