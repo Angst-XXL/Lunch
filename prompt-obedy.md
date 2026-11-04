@@ -2,7 +2,7 @@
 
 1) Svátky: pokud je dnes státní svátek v ČR nebo víkend, napiš jen "Dnes je volno", pošli oznámení podle bodu 11 a skonči. Stránku nepřepisuj.
 
-2) Šablona: zavolej nástroj Artifact s action "read" a url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK. Vrátí aktuální HTML stránky a uloží ho do souboru. Tato stránka JE šablona: obsahuje filtry, třídění a vykreslovací kód. Neměň v ní nic kromě bloku mezi řádky "// ===== DATA:START" a "// ===== DATA:END =====". Pokud read selže, nic nevymýšlej, napiš proč a skonči.
+2) Šablona: zavolej nástroj Artifact s action "read" a url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK. Vrátí aktuální HTML stránky a uloží ho do souboru. Tato stránka JE šablona: obsahuje filtry, třídění, sloupec s číslem menu, tlačítko pro ruční aktualizaci a vykreslovací kód. Neměň v ní nic kromě bloku mezi řádky "// ===== DATA:START" a "// ===== DATA:END =====". Pokud read selže, nic nevymýšlej, napiš proč a skonči.
 
 3) Stáhni dnešní menu z těchto stránek (každá restaurace má vlastní stránku, přehled města zlin.html je nespolehlivý, nepoužívej ho):
 - Prostě Restaurace, Vavrečkova 7074: https://www.menicka.cz/8250-proste-restaurace.html
@@ -35,10 +35,10 @@ Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,
 
 8) Ulož výsledek jako obedy-YYYY-MM-DD.html do pracovního adresáře. Před zveřejněním ověř, že stránka jde otevřít bez chyb ve skriptu (např. v Playwrightu, bez chyb v konzoli).
 
-9) Zveřejni: Artifact publish s file_path dnešního souboru, url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK a label s dnešním datem (např. "4. 11. 2026"), bez icon. NIKDY nevytvářej nový Artifact bez url. Pokud zveřejnění selže, pošli soubor nástrojem SendUserFile (display: render) a napiš proč.
+9) Zveřejni: Artifact publish s file_path dnešního souboru, url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK a label s dnešním datem (např. "4. 11. 2026"), bez icon a bez capabilities (stránka si oprávnění tlačítka ponechá). NIKDY nevytvářej nový Artifact bez url. Pokud zveřejnění selže, pošli soubor nástrojem SendUserFile (display: render) a napiš proč.
 
-10) Na konec napiš krátké shrnutí: odkaz na stránku, nejlepší jídlo v každé restauraci a které restaurace dnes menu nemají.
+10) Na konec napiš krátké shrnutí: odkaz na stránku, nejlepší jídlo (s číslem menu) v každé restauraci a které restaurace dnes menu nemají.
 
-11) Oznámení: úplně nakonec zavolej nástroj PushNotification (načti ho přes ToolSearch "select:PushNotification") se zprávou do 200 znaků, např. "Obědy 4. 11. hotové. Nejlepší dnes: kuřecí steak s fazolkami (U Ševce). claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK". Pošli ho i v den volna ("Dnes je volno"). Pokud nástroj hlásí, že oznámení nebylo odesláno, napiš to do shrnutí.
+11) Oznámení: úplně nakonec zavolej nástroj PushNotification (načti ho přes ToolSearch "select:PushNotification") se zprávou do 200 znaků, např. "Obědy 4. 11. hotové. Nejlepší dnes: č. 4 kuřecí steak s fazolkami (U Ševce). claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK". Pošli ho i v den volna ("Dnes je volno"). Pokud nástroj hlásí, že oznámení nebylo odesláno, napiš to do shrnutí.
 
 (Záložní kopie šablony s prázdnými daty je v repozitáři angst-xxl/lunch, soubor sablona-obedy.html na větvi claude/new-session-w07zdq.)
