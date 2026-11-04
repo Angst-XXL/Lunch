@@ -170,15 +170,13 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
     <div class="setbody">
       <div class="place">
         <label class="lbl" for="pl-work">Práce</label>
-        <div class="row"><select id="pl-work-pre" aria-label="Předvolené místo práce"></select></div>
-        <div class="row"><input type="text" id="pl-work" placeholder="nebo vlož souřadnice / odkaz z Mapy.cz" autocomplete="off"></div>
+        <div class="row"><input type="text" id="pl-work" placeholder="souřadnice nebo odkaz z Mapy.cz" autocomplete="off"></div>
         <span class="pl-ok" id="pl-work-st"></span>
       </div>
       <div class="place">
         <label class="lbl" for="pl-home">Domov</label>
-        <div class="row"><select id="pl-home-pre" aria-label="Předvolené místo domova"></select></div>
         <div class="row"><input type="text" id="pl-home" placeholder="např. 49.2391, 17.6634 nebo odkaz z Mapy.cz" autocomplete="off"></div>
-        <span class="pl-ok" id="pl-home-st"></span>
+        <span class="pl-ok" id="pl-home-st"></span> <button type="button" class="link" id="pl-home-clear" hidden>smazat domov</button>
       </div>
       <div class="place">
         <span class="lbl">Kde jsem v který den</span>
@@ -217,14 +215,12 @@ var DNY=[];
 /* Souřadnice restaurací (z map na menicka.cz) */
 var GEO={"8250":[49.224476,17.659139],"2992":[49.224476,17.659139],"24":[49.224326,17.661103],"5881":[49.222461,17.662173],
   "5492":[49.226961,17.671113],"3538":[49.233035,17.659284],"3027":[49.237923,17.657108]};
-var PRESETS=[["Vavrečkova 7074 (21. budova)",49.224476,17.659139],["Gahurova 5265",49.224326,17.661103],["náměstí Práce 2523",49.222461,17.662173],
-  ["Kvítková 4323",49.226961,17.671113],["Okružní 4701",49.233035,17.659284],["Mokrá 5215",49.237923,17.657108]];
 var DAYV=["v neděli","v pondělí","v úterý","ve středu","ve čtvrtek","v pátek","v sobotu"];
 var DAYS=["Ne","Po","Út","St","Čt","Pá","So"], DAYL=["neděle","pondělí","úterý","středa","čtvrtek","pátek","sobota"];
 
 var KEY="obedy-filtry-v1", KEYP="obedy-osobni-v1";
 var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,d:1,r:0},nofried:0,nosoup:0,nosalad:0,maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
-var PDEF={work:{name:"Vavrečkova 7074 (21. budova)",lat:49.224476,lng:17.659139},home:null,
+var PDEF={work:{name:"Vavrečkova 7074",lat:49.224476,lng:17.659139},home:null,
   sched:{1:"work",2:"work",3:"work",4:"home",5:"home"},theme:"auto",fav:{},hide:{}};
 function clone(o){return JSON.parse(JSON.stringify(o))}
 var st=clone(DEF), ps=clone(PDEF);
@@ -312,7 +308,7 @@ function renderSub(){
   var o=origin(), d=days[sel], w=d?wd(d.datum):1;
   var txt;
   if(o.fallback)txt="Řazeno od práce ("+o.p.name+"). "+(DAYV[w]||"").replace(/^./,function(c){return c.toUpperCase()})+" jsi doma, ale domov není nastavený. Nastav ho v „Moje nastavení“.";
-  else txt="Řazeno podle vzdálenosti od místa, kde jsi "+(DAYV[w]||"")+": "+(o.which=="home"?"doma":"v práci")+(o.p&&o.p.name!="vlastní místo"?" ("+o.p.name+")":"")+".";
+  else txt="Řazeno podle vzdálenosti od místa, kde jsi "+(DAYV[w]||"")+": "+(o.which=="home"?"doma":"v práci")+(o.p&&o.p.name&&!/^(vlastní místo|domov|práce)$/.test(o.p.name)?" ("+o.p.name+")":"")+".";
   $("sub").textContent=txt;
 }
 
@@ -439,37 +435,24 @@ function change(){save();render()}
 function changeP(){saveP();render();renderSettings()}
 
 /* ---------- nastavení míst ---------- */
-function fillPre(id,cur,allowNone){
-  var s=$(id),h=allowNone?'<option value="">— nenastaveno —</option>':'';
-  h+=PRESETS.map(function(p,i){return '<option value="'+i+'">'+e(p[0])+'</option>'}).join('');
-  h+='<option value="c">Vlastní (souřadnice níže)</option>';
-  s.innerHTML=h;
-  var idx="";if(cur){idx="c";PRESETS.forEach(function(p,i){if(Math.abs(p[1]-cur.lat)<1e-5&&Math.abs(p[2]-cur.lng)<1e-5)idx=String(i)})}
-  s.value=idx;
-}
 function renderSettings(){
-  fillPre("pl-work-pre",ps.work,false);fillPre("pl-home-pre",ps.home,true);
   [["work","pl-work-st"],["home","pl-home-st"]].forEach(function(a){var p=ps[a[0]],el=$(a[1]);
-    el.className="pl-ok";el.textContent=p?("Nastaveno: "+p.name+" ("+p.lat.toFixed(5)+", "+p.lng.toFixed(5)+")"):"Nenastaveno.";});
+    el.className="pl-ok";el.textContent=p?("Nastaveno: "+(p.name&&p.name!="vlastní místo"?p.name+" ":"")+"("+p.lat.toFixed(5)+", "+p.lng.toFixed(5)+")"):"Nenastaveno. Vlož souřadnice nebo odkaz z Mapy.cz a potvrď.";});
+  $("pl-home-clear").hidden=!ps.home;
   $("wk").innerHTML=[1,2,3,4,5].map(function(w){var v=ps.sched[w]||"work";return '<button type="button" data-wd="'+w+'">'+DAYS[w]+'<b>'+(v=="home"?"Domov":"Práce")+'</b></button>'}).join('');
   applyTheme();
 }
 function bindPlace(which){
-  $("pl-"+which+"-pre").addEventListener("change",function(){
-    var v=this.value;
-    if(v===""){ps[which]=null;changeP();return}
-    if(v=="c"){$("pl-"+which).focus();return}
-    var p=PRESETS[+v];ps[which]={name:p[0],lat:p[1],lng:p[2]};changeP();
-  });
   $("pl-"+which).addEventListener("change",function(){
     var v=this.value.trim(),st2=$("pl-"+which+"-st");if(!v)return;
     if(/mapy\.(cz|com)\/s\//.test(v)){st2.className="pl-err";st2.textContent="Krátký odkaz (mapy…/s/…) neumím přečíst. Otevři ho a zkopíruj celou adresu z prohlížeče, nebo vlož souřadnice (v Mapy.cz klikni pravým tlačítkem na místo → souřadnice).";return}
     var p=parseLoc(v);
     if(!p){st2.className="pl-err";st2.textContent="Tohle nevypadá jako souřadnice v Česku. Zkus např. 49.2391, 17.6634.";return}
-    ps[which]={name:"vlastní místo",lat:p.lat,lng:p.lng};this.value="";changeP();
+    ps[which]={name:which=="home"?"domov":"práce",lat:p.lat,lng:p.lng};this.value="";changeP();
   });
 }
 bindPlace("work");bindPlace("home");
+$("pl-home-clear").addEventListener("click",function(){ps.home=null;changeP()});
 $("wk").addEventListener("click",function(ev){var b=ev.target.closest("[data-wd]");if(!b)return;var w=b.dataset.wd;ps.sched[w]=(ps.sched[w]=="home")?"work":"home";changeP()});
 document.querySelectorAll("[data-theme-set]").forEach(function(b){b.addEventListener("click",function(){ps.theme=b.dataset.themeSet;saveP();applyTheme()})});
 
