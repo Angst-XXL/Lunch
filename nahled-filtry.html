@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Náhled filtrů</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f3f5f2;--surface:#fff;--fg:#1d2a24;--muted:#5b6b62;--line:#dde3dd;--on:#1d2a24;--on-fg:#f3f5f2;--best:#1f7a4d;--ban:#d0342c;--note:#e3f3ea}
+@media (prefers-color-scheme:dark){:root{--bg:#121a16;--surface:#1b2520;--fg:#e8eee9;--muted:#9bab9f;--line:#2c3a33;--on:#e8eee9;--on-fg:#121a16;--best:#5fd197;--ban:#ff6b5e;--note:#163626;color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:'Figtree',system-ui,sans-serif;font-size:15px;line-height:1.4;padding:20px max(16px,env(safe-area-inset-left,0px)) 40px}
+main{max-width:720px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:1.4rem;margin:0}
+h2{font-size:1rem;margin:0 0 4px}
+p{margin:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.row{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.lbl{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);min-width:84px}
+.f{border:1px solid var(--line);background:transparent;border-radius:99px;padding:4px 10px;cursor:pointer;font-size:.85rem;font:inherit;font-size:.85rem;color:inherit}
+.f[aria-pressed="true"]{background:var(--on);color:var(--on-fg);border-color:var(--on)}
+.f.x[aria-pressed="true"]{text-decoration:line-through;text-decoration-thickness:2px}
+.desc{font-size:.85rem;color:var(--muted)}
+.res{font-size:.85rem;background:var(--note);color:var(--best);padding:6px 10px;border-radius:8px}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:2px}
+.tag.rec{color:var(--best);border-color:var(--best)}
+.nm{position:relative;display:inline-block;width:1.2em;height:1.2em;line-height:1.2em;text-align:center;vertical-align:-.2em}
+.nm::before{content:"🍖";font-size:.8em}
+.nm::after{content:"";position:absolute;inset:0;border:2px solid var(--ban);border-radius:50%;background:linear-gradient(135deg,transparent calc(50% - 1px),var(--ban) calc(50% - 1px),var(--ban) calc(50% + 1px),transparent calc(50% + 1px))}
+</style></head><body><main>
+<h1>Náhled: filtry jídel</h1>
+<p class="desc">Jen ukázka ovládání, štítky jdou proklikat. Pod každou variantou je vidět, co by se na stránce schovalo.</p>
+
+<section class="card" data-v="now">
+  <h2>Teď <span class="tag">současný stav</span></h2>
+  <p class="desc">DRUH: zapnuto = ukázat. SKRÝT: zapnuto = schovat. Opačný význam.</p>
+  <div class="row"><span class="lbl">Druh</span>
+    <button class="f" data-k="k" aria-pressed="true">Drůbež</button><button class="f" data-k="v" aria-pressed="true">Vepřové</button><button class="f" data-k="h" aria-pressed="true">Hovězí</button><button class="f" data-k="z" aria-pressed="true"><span class="nm"></span> Bez masa</button><button class="f" data-k="d" aria-pressed="true">🍰 Sladké</button><button class="f" data-k="r" aria-pressed="false">🐟 Ryby</button></div>
+  <div class="row"><span class="lbl">Skrýt</span>
+    <button class="f" data-k="fr" aria-pressed="false">Smažené</button><button class="f" data-k="fr2" aria-pressed="false" hidden>i se smaženou přílohou</button><button class="f" data-k="so" aria-pressed="false">Polévky</button><button class="f" data-k="sa" aria-pressed="false">Saláty</button></div>
+  <p class="res"></p>
+</section>
+
+<section class="card" data-v="one">
+  <h2>Možnost 1 <span class="tag rec">doporučuju</span></h2>
+  <p class="desc">Všude platí totéž: zapnuto = ukázat, vypnuto = schovat. Výchozí je vše zapnuté (kromě ryb).</p>
+  <div class="row"><span class="lbl">Druh</span>
+    <button class="f" data-k="k" aria-pressed="true">Drůbež</button><button class="f" data-k="v" aria-pressed="true">Vepřové</button><button class="f" data-k="h" aria-pressed="true">Hovězí</button><button class="f" data-k="z" aria-pressed="true"><span class="nm"></span> Bez masa</button><button class="f" data-k="d" aria-pressed="true">🍰 Sladké</button><button class="f" data-k="r" aria-pressed="false">🐟 Ryby</button></div>
+  <div class="row"><span class="lbl">Zahrnout</span>
+    <button class="f" data-k="fm" aria-pressed="true">Smažené hlavní jídlo</button><button class="f" data-k="fp" aria-pressed="true">Smažená příloha</button><button class="f" data-k="so" aria-pressed="true">Polévky</button><button class="f" data-k="sa" aria-pressed="true">Saláty</button></div>
+  <p class="res"></p>
+</section>
+
+<section class="card" data-v="two">
+  <h2>Možnost 2 <span class="tag">jen popisky</span></h2>
+  <p class="desc">Chování jako teď, jen jasnější názvy řad a zapnuté štítky ve druhé řadě jsou přeškrtnuté.</p>
+  <div class="row"><span class="lbl">Ukázat druh</span>
+    <button class="f" data-k="k" aria-pressed="true">Drůbež</button><button class="f" data-k="v" aria-pressed="true">Vepřové</button><button class="f" data-k="h" aria-pressed="true">Hovězí</button><button class="f" data-k="z" aria-pressed="true"><span class="nm"></span> Bez masa</button><button class="f" data-k="d" aria-pressed="true">🍰 Sladké</button><button class="f" data-k="r" aria-pressed="false">🐟 Ryby</button></div>
+  <div class="row"><span class="lbl">Skrýt navíc</span>
+    <button class="f x" data-k="fr" aria-pressed="false">Smažené</button><button class="f x" data-k="fr2" aria-pressed="false" hidden>i se smaženou přílohou</button><button class="f x" data-k="so" aria-pressed="false">Polévky</button><button class="f x" data-k="sa" aria-pressed="false">Saláty</button></div>
+  <p class="res"></p>
+</section>
+</main>
+<script>
+var N={k:"drůbež",v:"vepřové",h:"hovězí",z:"bez masa",d:"sladké",r:"ryby"};
+document.querySelectorAll(".card").forEach(function(c){
+  var v=c.dataset.v;
+  function on(k){var b=c.querySelector('[data-k="'+k+'"]');return b&&b.getAttribute("aria-pressed")=="true"}
+  function upd(){
+    var fr2=c.querySelector('[data-k="fr2"]'); if(fr2)fr2.hidden=!on("fr");
+    var h=Object.keys(N).filter(function(k){return !on(k)}).map(function(k){return N[k]});
+    if(v=="one"){if(!on("fm"))h.push("smažená hlavní jídla");if(!on("fp"))h.push("jídla se smaženou přílohou");if(!on("so"))h.push("polévky");if(!on("sa"))h.push("saláty")}
+    else{if(on("fr"))h.push(on("fr2")?"vše smažené (i přílohy)":"smažená hlavní jídla");if(on("so"))h.push("polévky");if(on("sa"))h.push("saláty")}
+    c.querySelector(".res").textContent=h.length?"Schová se: "+h.join(", ")+".":"Zobrazí se všechno.";
+  }
+  c.addEventListener("click",function(e){var b=e.target.closest(".f");if(!b)return;b.setAttribute("aria-pressed",b.getAttribute("aria-pressed")!="true");if(b.dataset.k=="fr"&&!on("fr")){var x=c.querySelector('[data-k="fr2"]');x.setAttribute("aria-pressed","false")}upd()});
+  upd();
+});
+</script>
+</body></html>
