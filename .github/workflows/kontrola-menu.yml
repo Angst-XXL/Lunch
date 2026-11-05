@@ -1,0 +1,72 @@
+# Každých 30 minut dopoledne (v pracovní dny) zkontroluje menu na menicka.cz.
+# Když se změní, založí (nebo doplní) issue „Změna menu …“ – GitHub pošle upozornění.
+# Claude se tím nespouští; aktualizaci tabulky si spustíš ručně, když budeš chtít.
+name: Kontrola změn menu
+
+on:
+  schedule:
+    # časy jsou v UTC: v zimě 7:30–11:30, v létě 8:30–12:30 českého času
+    - cron: "30 6-10 * * 1-5"
+    - cron: "0 7-10 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: kontrola-menu
+  cancel-in-progress: false
+
+jobs:
+  kontrola:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Načti stav z minulé kontroly
+        uses: actions/cache/restore@v4
+        with:
+          path: stav-menu.json
+          key: stav-menu-${{ github.run_id }}
+          restore-keys: stav-menu-
+
+      - name: Zkontroluj menicka.cz
+        run: python3 kontrola-menu.py
+
+      - name: Ulož stav
+        if: always()
+        uses: actions/cache/save@v4
+        with:
+          path: stav-menu.json
+          key: stav-menu-${{ github.run_id }}
+
+      - name: Pošli upozornění
+        if: hashFiles('zprava.md') != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          VLASTNIK: ${{ github.repository_owner }}
+        run: |
+          DNES=$(TZ=Europe/Prague date +%-d.%-m.%Y)
+          CAS=$(TZ=Europe/Prague date +%H:%M)
+          NAZEV="Změna menu $DNES"
+          {
+            echo "@$VLASTNIK menu se změnilo (kontrola v $CAS):"
+            echo
+            cat zprava.md
+            echo
+            echo "---"
+            echo "Aktualizovat tabulku (spustí Clauda): https://claude.ai/code/routines/trig_01YUMfvGqRm9kLhMgX3tjxCn"
+            echo "Tabulka: https://angst-xxl.github.io/Lunch/"
+          } > telo.md
+          CISLO=$(gh issue list --state open --search "\"$NAZEV\" in:title" --json number,title \
+                  --jq "map(select(.title == \"$NAZEV\"))[0].number // empty")
+          if [ -n "$CISLO" ]; then
+            gh issue comment "$CISLO" --body-file telo.md
+          else
+            # staré otevřené upozornění zavři, ať se nehromadí
+            for N in $(gh issue list --state open --search "\"Změna menu\" in:title" --json number --jq '.[].number'); do
+              gh issue close "$N"
+            done
+            gh issue create --title "$NAZEV" --body-file telo.md
+          fi
