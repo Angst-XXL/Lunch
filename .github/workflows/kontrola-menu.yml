@@ -9,6 +9,11 @@ on:
     - cron: "30 6-10 * * 1-5"
     - cron: "0 7-10 * * 1-5"
   workflow_dispatch:
+    inputs:
+      zkouska:
+        description: "Poslat zkušební upozornění"
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -40,6 +45,10 @@ jobs:
         with:
           path: stav-menu.json
           key: stav-menu-${{ github.run_id }}
+
+      - name: Zkušební zpráva
+        if: inputs.zkouska
+        run: printf '**Zkušební upozornění** – takhle bude vypadat zpráva o změně menu.\n- ➕ Ukázkové nové jídlo – 159 Kč\n- ➖ Ukázkové zrušené jídlo – 149 Kč\n' > zprava.md
 
       - name: Pošli upozornění
         if: hashFiles('zprava.md') != ''
