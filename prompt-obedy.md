@@ -17,7 +17,7 @@ Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích 
 
 4) Pro každé jídlo včetně polévek odhadni kcal a bílkoviny/sacharidy/tuky v gramech (restaurace je neuvádějí, jsou to odhady). Stejné jídlo ve stejné restauraci odhadni stejně jako v předchozích dnech (najdeš je v přečtené stránce).
 
-5) V každé restauraci a každém dni označ jedno doporučené jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin. Polévka, salát, sladké jídlo, smažené hlavní jídlo (smažené = 1), ryba ani vnitřnosti to být nemůže. Do pole tip dej krátkou neutrální radu, jak jídlo odlehčit (např. „přílohu sněz jen napůl“, „hranolky vyměň za salát“); když má doporučené jídlo smaženou přílohu (smažené = 2), tip vždy radí ji vyměnit za vařenou přílohu nebo salát; když má restaurace víc polévek, doporuč lehčí. Stránku může vidět i někdo jiný, proto v tipech nezmiňuj osobní cíle ani zdraví konkrétního člověka.
+5) V každé restauraci a každém dni označ jedno doporučené jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin. Polévka, salát, sladké jídlo ani smažené hlavní jídlo (smažené = 1) to být nemůže. Ryba i jídlo s vnitřnostmi doporučené být můžou, když jsou nejlepší volbou: kdo je nejí, má je vypnuté ve filtrech a stránka mu sama vybere náhradní doporučení. Do pole tip dej krátkou neutrální radu, jak jídlo odlehčit (např. „přílohu sněz jen napůl“, „hranolky vyměň za salát“); když má doporučené jídlo smaženou přílohu (smažené = 2), tip vždy radí ji vyměnit za vařenou přílohu nebo salát; když má restaurace víc polévek, doporuč lehčí. Stránku může vidět i někdo jiný, proto v tipech nezmiňuj osobní cíle ani zdraví konkrétního člověka.
 
 6) Pořadí restaurací v datech nehraje roli: stránka je řadí sama podle polohy diváka. Dodržuj pořadí ze seznamu výše.
 
