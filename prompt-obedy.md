@@ -34,7 +34,7 @@ Restaurace: [název, adresa, url, tip, [řádky]].
 - druh: "k" drůbež: kuřecí, krůtí, kachna, husa (i slepičí vývar), "v" vepřové (i uzenina, slanina, šunka, špek, karbanátek, směs, srdce, játra), "h" hovězí (i telecí), "z" bez masa (slané: sýr, vejce, zelenina, luštěniny), "d" sladké, "r" ryba. U jídla s více druhy masa dej hlavní maso.
 - smažené: 1 když je HLAVNÍ složka obalovaná nebo smažená (řízek, smažený sýr, cordon bleu, stripsy, v bramboráku, Kentucky, panko, smažený květák); 2 když je smažená jen příloha nebo doplněk (hranolky, steakové hranolky, krokety, smažené bramborové dolárky, chipsy, smažená/osmažená cibulka); 0 když na jídle nic smaženého není.
 - číslo menu: pořadové číslo jídla na zdrojové stránce, 0 = bez čísla
-- vnitřnosti: 1 když jídlo (i polévka) obsahuje vnitřnosti: játra, srdce, ledvinky, žaludky, dršťky, jazyk, mozeček, plíčky, a také jitrnice, jelito, prejt, tlačenka; jinak 0. Párky, klobásy a uzeniny vnitřnosti nejsou.
+- vnitřnosti: 1 když jídlo (i polévka) obsahuje vnitřnosti: játra, srdce, ledvinky, žaludky, dršťky, jazyk, mozeček, plíčky, brzlík, a také jitrnice, jelito, prejt, tlačenka; jinak 0. Párky, klobásy a uzeniny vnitřnosti nejsou, stejně tak oháňka a morek.
 Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0,4,0]
 
 8) Ulož výsledek jako obedy-YYYY-MM-DD.html do pracovního adresáře. Před zveřejněním ověř, že stránka jde otevřít bez chyb ve skriptu (např. v Playwrightu, bez chyb v konzoli) a že ukazuje záložku „Dnes“ (v neděli a ve svátek záložku dalšího pracovního dne).
