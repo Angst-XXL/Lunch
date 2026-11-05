@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="cs"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Náhled ikon</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap">
+<style>
+:root{--bg:#f3f5f2;--surface:#fff;--fg:#1d2a24;--muted:#5b6b62;--line:#dde3dd;--on:#1d2a24;--on-fg:#f3f5f2;--best:#1f7a4d;--ban:#d0342c;--soft:#e3f3ea;--soft-fg:#1f7a4d}
+.dark{--bg:#121a16;--surface:#1b2520;--fg:#e8eee9;--muted:#9bab9f;--line:#2c3a33;--on:#e8eee9;--on-fg:#121a16;--best:#5fd197;--ban:#ff6b5e;--soft:#163626;--soft-fg:#7fe0ad;color-scheme:dark}
+body{margin:0;background:#f3f5f2;color:#1d2a24;font-family:'Figtree',system-ui,sans-serif;font-size:15px;line-height:1.4;padding:20px max(16px,env(safe-area-inset-left,0px)) 40px}
+main{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:18px}
+h1{font-size:1.4rem;margin:0} h2{font-size:1rem;margin:0} p{margin:0}
+.desc{font-size:.85rem;color:#5b6b62}
+.pair{display:grid;grid-template-columns:1fr;gap:10px}
+@media(min-width:640px){.pair{grid-template-columns:1fr 1fr}}
+.panel{background:var(--bg);color:var(--fg);border:1px solid var(--line);border-radius:12px;padding:12px;display:flex;flex-direction:column;gap:8px}
+.panel .t{font-size:.72rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.f{border:1px solid var(--line);background:transparent;border-radius:99px;padding:4px 10px;font:inherit;font-size:.85rem;color:var(--fg);display:inline-flex;align-items:center;gap:5px}
+.f.on{background:var(--on);color:var(--on-fg);border-color:var(--on)}
+.f.off{text-decoration:line-through;color:var(--muted)}
+/* styl B: zapnutý štítek světle zelený místo černého */
+.B .f.on{background:var(--soft);color:var(--soft-fg);border-color:var(--best)}
+/* styl C: ikona ve světlém kolečku */
+.ic{display:inline-flex;align-items:center;justify-content:center;width:1.35em;height:1.35em;border-radius:50%;background:#fff;font-size:.85em;line-height:1}
+.dish{font-weight:600;font-size:.9rem}
+/* ikony */
+.v{display:inline-flex;align-items:center;justify-content:center;width:1.25em;height:1.25em;border-radius:50%;background:#2e9e5b;color:#fff;font-size:.72em;font-weight:700;font-family:system-ui,sans-serif}
+.nm{position:relative;display:inline-block;width:1.25em;height:1.25em;line-height:1.25em;text-align:center}
+.nm::before{content:"🍖";font-size:.8em}
+.nm::after{content:"";position:absolute;inset:0;border:2px solid var(--ban);border-radius:50%;background:linear-gradient(135deg,transparent calc(50% - 1px),var(--ban) calc(50% - 1px),var(--ban) calc(50% + 1px),transparent calc(50% + 1px))}
+.opt{display:flex;flex-direction:column;gap:8px;background:#fff;border:1px solid #dde3dd;border-radius:12px;padding:12px 14px}
+.tag{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid #1f7a4d;color:#1f7a4d;margin-left:6px;vertical-align:2px}
+</style></head><body><main>
+<h1>Náhled: ikona „bez masa“ a čitelnost</h1>
+<p class="desc">Každá varianta je ve světlém i tmavém režimu, jako zapnutý (tmavý) a vypnutý (přeškrtnutý) štítek a jako ikona u jídla.</p>
+
+<h2>1. Ikona pro bezmasá jídla</h2>
+<div id="icons"></div>
+
+<h2>2. Čitelnost ikon na zapnutém (tmavém) štítku</h2>
+<div id="styles"></div>
+</main>
+<script>
+var ICONS=[
+ ["Teď: přeškrtnuté maso","<span class='nm'></span>",""],
+ ["🥦 Brokolice","🥦","doporučuju"],
+ ["🥕 Mrkev","🥕",""],
+ ["🥚 Vejce","🥚",""],
+ ["Zelené „V“ (vegetariánské)","<span class='v'>V</span>","doporučuju"],
+ ["🥬 Listová zelenina","🥬",""]
+];
+function panel(cls,icon,label){
+  return '<div class="panel '+cls+'"><span class="t">'+(cls.indexOf("dark")>=0?"tmavý režim":"světlý režim")+'</span>'+
+   '<div class="row"><span class="f on">'+icon+' '+label+'</span><span class="f off">'+icon+' '+label+'</span><span class="f on">🍰 Sladké</span><span class="f on">🐟 Ryby</span></div>'+
+   '<div class="dish">'+icon+' Smažený květák, vařené brambory</div></div>';
+}
+document.getElementById("icons").innerHTML=ICONS.map(function(i){
+  return '<div class="opt"><h2>'+i[0]+(i[2]?'<span class="tag">'+i[2]+'</span>':'')+'</h2><div class="pair">'+panel("",i[1],"Bez masa")+panel("dark",i[1],"Bez masa")+'</div></div>';
+}).join("");
+var IC="🥦";
+var STY=[
+ ["A: Jako teď (zapnutý štítek je černý / v tmavém režimu bílý)","",function(ic){return ic}],
+ ["B: Zapnutý štítek světle zelený místo černého","B",function(ic){return ic}],
+ ["C: Černý štítek zůstane, ikona dostane bílé kolečko","",function(ic){return '<span class="ic">'+ic+'</span>'}]
+];
+document.getElementById("styles").innerHTML=STY.map(function(s,n){
+  function p(dark){var c=(dark?"dark ":"")+s[1];
+    return '<div class="panel '+c+'"><span class="t">'+(dark?"tmavý režim":"světlý režim")+'</span><div class="row">'+
+    ['Drůbež','Vepřové','Hovězí'].map(function(x){return '<span class="f on">'+x+'</span>'}).join('')+
+    '<span class="f on">'+s[2](IC)+' Bez masa</span><span class="f on">'+s[2]("🍰")+' Sladké</span><span class="f off">'+s[2]("🐟")+' Ryby</span></div></div>'}
+  return '<div class="opt"><h2>'+s[0]+(n==1?'<span class="tag">doporučuju</span>':'')+'</h2><div class="pair">'+p(false)+p(true)+'</div></div>';
+}).join("");
+</script>
+</body></html>
