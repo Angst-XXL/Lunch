@@ -16,6 +16,7 @@ p{margin:0}
 .f{border:1px solid var(--line);background:transparent;border-radius:99px;padding:4px 10px;cursor:pointer;font-size:.85rem;font:inherit;font-size:.85rem;color:inherit}
 .f[aria-pressed="true"]{background:var(--on);color:var(--on-fg);border-color:var(--on)}
 .f.x[aria-pressed="true"]{text-decoration:line-through;text-decoration-thickness:2px}
+.f.s[aria-pressed="true"]{background:transparent;color:var(--ban);border-color:var(--ban);text-decoration:line-through;text-decoration-thickness:2px}
 .desc{font-size:.85rem;color:var(--muted)}
 .res{font-size:.85rem;background:var(--note);color:var(--best);padding:6px 10px;border-radius:8px}
 .tag{display:inline-block;font-size:.72rem;font-weight:700;padding:1px 8px;border-radius:99px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:2px}
@@ -54,6 +55,16 @@ p{margin:0}
     <button class="f" data-k="k" aria-pressed="true">Drůbež</button><button class="f" data-k="v" aria-pressed="true">Vepřové</button><button class="f" data-k="h" aria-pressed="true">Hovězí</button><button class="f" data-k="z" aria-pressed="true"><span class="nm"></span> Bez masa</button><button class="f" data-k="d" aria-pressed="true">🍰 Sladké</button><button class="f" data-k="r" aria-pressed="false">🐟 Ryby</button></div>
   <div class="row"><span class="lbl">Skrýt navíc</span>
     <button class="f x" data-k="fr" aria-pressed="false">Smažené</button><button class="f x" data-k="fr2" aria-pressed="false" hidden>i se smaženou přílohou</button><button class="f x" data-k="so" aria-pressed="false">Polévky</button><button class="f x" data-k="sa" aria-pressed="false">Saláty</button></div>
+  <p class="res"></p>
+</section>
+
+<section class="card" data-v="three">
+  <h2>Možnost 3 <span class="tag">jako teď + přeškrtnutí</span></h2>
+  <p class="desc">Názvy řad i chování zůstanou jako teď. Jen zapnutý štítek ve SKRÝT nezčerná, ale přeškrtne se, takže je vidět, že se ta jídla schovávají.</p>
+  <div class="row"><span class="lbl">Druh</span>
+    <button class="f" data-k="k" aria-pressed="true">Drůbež</button><button class="f" data-k="v" aria-pressed="true">Vepřové</button><button class="f" data-k="h" aria-pressed="true">Hovězí</button><button class="f" data-k="z" aria-pressed="true"><span class="nm"></span> Bez masa</button><button class="f" data-k="d" aria-pressed="true">🍰 Sladké</button><button class="f" data-k="r" aria-pressed="false">🐟 Ryby</button></div>
+  <div class="row"><span class="lbl">Skrýt</span>
+    <button class="f s" data-k="fr" aria-pressed="false">Smažené</button><button class="f s" data-k="fr2" aria-pressed="false" hidden>i se smaženou přílohou</button><button class="f s" data-k="so" aria-pressed="false">Polévky</button><button class="f s" data-k="sa" aria-pressed="false">Saláty</button></div>
   <p class="res"></p>
 </section>
 </main>
