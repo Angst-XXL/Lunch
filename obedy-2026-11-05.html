@@ -99,6 +99,8 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 .subnote{padding:6px 14px;font-size:.8rem;color:var(--muted);border-top:1px solid var(--line)}
 /* štítky filtrů: zapnuto = tmavé (ukázat), vypnuto = přeškrtnuté (schovat) */
 .f.tg[aria-pressed="false"]{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted)}
+/* štítek, který mezi zobrazenými jídly nemá co schovat: zešedne, ale zůstane (i s nastavením) */
+.f.na{opacity:.4;border-style:dashed}
 .fish .name{color:var(--fish)} .soup .name{color:var(--soup)}
 .note{font-size:.8rem;color:var(--muted)}
 .note a{color:inherit}
@@ -596,10 +598,11 @@ function sync(){
   $("sort").options[0].text=st.view=="all"?"Výchozí (bílkoviny na 100 kcal)":"Výchozí (podle restaurace)";
   document.querySelectorAll("[data-druh]").forEach(function(b){b.setAttribute("aria-pressed",!!st.druh[b.dataset.druh])});
   ["addsoup","addsalad"].forEach(function(k){$(k).setAttribute("aria-pressed",!!st[k])});
-  /* štítek, který mezi zobrazenými druhy nemá co schovat, zmizí (nastavení si pamatuje) */
+  /* štítek, který mezi zobrazenými druhy nemá co schovat, zešedne (nastavení si pamatuje) */
   var has={fm:0,fp:0,off:0,so:1,sa:1};
   R().forEach(function(r){r[4].forEach(function(d){if(!st.druh[d[7]||"z"])return;if(d[8]==1)has.fm=1;if(d[8]==2)has.fp=1;if(d[10])has.off=1})});
-  document.querySelectorAll("[data-inc]").forEach(function(b){var k=b.dataset.inc;b.setAttribute("aria-pressed",!!st.inc[k]);b.hidden=!has[k]});
+  document.querySelectorAll("[data-inc]").forEach(function(b){var k=b.dataset.inc;if(!("t" in b.dataset))b.dataset.t=b.title||"";
+    b.setAttribute("aria-pressed",!!st.inc[k]);b.classList.toggle("na",!has[k]);b.title=has[k]?b.dataset.t:"Mezi zobrazenými jídly teď žádné nejsou. Nastavení zůstává."});
   $("maxk").value=st.maxk;
   $("maxk-out").textContent=st.maxk>=1400?"bez limitu":"≤ "+st.maxk;
 }
