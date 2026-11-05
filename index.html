@@ -104,6 +104,9 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 .f.tg[aria-pressed="false"]{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted)}
 /* štítek, který mezi zobrazenými jídly nemá co schovat: zešedne, ale zůstane (i s nastavením) */
 .f.na{opacity:.4;border-style:dashed}
+/* doplňková volba, která se ukáže jen podle stavu hlavního štítku */
+.f.sub2{font-size:.78rem;padding:3px 9px;margin-left:-4px}
+#soupkind::before{content:"▸ ";opacity:.7}
 .fish .name{color:var(--fish)} .soup .name{color:var(--soup)}
 .note{font-size:.8rem;color:var(--muted)}
 .note a{color:inherit}
@@ -160,10 +163,11 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
     <button type="button" class="f tg" data-druh="r">🐟 Ryby</button>
   </div>
   <div class="row"><span class="lbl">Zahrnout</span>
-    <button type="button" class="f tg" data-inc="fm" title="Jídla, kde je smažená hlavní složka (řízek, smažený sýr…)">Smažené hlavní jídlo</button>
-    <button type="button" class="f tg" data-inc="fp" title="Jídla, kde je smažená jen příloha (hranolky, krokety, smažená cibulka…)">Smažená příloha</button>
+    <button type="button" class="f tg" data-inc="fm" title="Jídla, kde je smažená hlavní složka (řízek, smažený sýr…)">Smažené</button>
+    <button type="button" class="f tg sub2" data-inc="fp" hidden title="Jídla, kde je smažená jen příloha (hranolky, krokety, smažená cibulka…)">smažené přílohy</button>
     <button type="button" class="f tg" data-inc="off" title="Játra, srdce, ledvinky, dršťky, jazyk, brzlík, jitrnice, jelito, prejt, tlačenka…">Vnitřnosti</button>
     <button type="button" class="f tg" data-inc="so">Polévky</button>
+    <button type="button" class="f sub2" id="soupkind" hidden title="Klepnutím přepneš: všechny / jen bez masa / jen s masem">všechny</button>
     <button type="button" class="f tg" data-inc="sa">Saláty</button>
   </div>
   <div class="row"><span class="hint">Zelený štítek = jídla se ukazují, přeškrtnutý = jsou schovaná.</span></div>
@@ -361,7 +365,7 @@ var DAYV=["v neděli","v pondělí","v úterý","ve středu","ve čtvrtek","v p�
 var DAYS=["Ne","Po","Út","St","Čt","Pá","So"], DAYL=["neděle","pondělí","úterý","středa","čtvrtek","pátek","sobota"];
 
 var KEY="obedy-filtry-v1", KEYP="obedy-osobni-v1";
-var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,d:1,r:0},inc:{fm:1,fp:1,off:1,so:1,sa:1},maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
+var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,d:1,r:0},inc:{fm:1,fp:1,off:1,so:1,sa:1},soupKind:"all",maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
 var PDEF={work:{name:"Vavrečkova 7074",lat:49.224476,lng:17.659139},home:null,
   sched:{1:"work",2:"work",3:"work",4:"home",5:"home"},theme:"auto",fav:{work:{},home:{}},hide:{work:{},home:{}}};
 function clone(o){return JSON.parse(JSON.stringify(o))}
@@ -488,8 +492,10 @@ function okProps(d){
   if(!st.inc.off&&d[10])return false;
   return true;
 }
+function soupKindOk(d){return st.soupKind=="veg"?d[7]=="z":st.soupKind=="meat"?d[7]!="z":true}
 function ok(d){
   if(!okProps(d))return false;
+  if(d[6]=="s"&&!soupKindOk(d))return false;
   if(!st.inc.so&&d[6]=="s")return false;
   if(!st.inc.sa&&isSalad(d))return false;
   if(st.maxk<1400&&!side(d)&&d[2]>st.maxk)return false;
@@ -515,10 +521,10 @@ function icons(d){
 function lightest(list){return list.slice().sort(function(a,b){return a[2]-b[2]})[0]}
 function short(s){s=String(s).replace(/\s*\(.*?\)\s*/g," ").trim();return s.length>26?s.slice(0,25).trim()+"…":s}
 function extras(r){
-  var soups=r[4].filter(function(d){return d[6]=="s"&&okProps(d)}),sal=r[4].filter(function(d){return isSalad(d)&&okProps(d)}),x={soup:null,salad:null,noSoup:false,noSalad:false};
+  var soups=r[4].filter(function(d){return d[6]=="s"&&okProps(d)&&soupKindOk(d)}),sal=r[4].filter(function(d){return isSalad(d)&&okProps(d)}),x={soup:null,salad:null,noSoup:false,noSalad:false};
   if(st.addsoup){
     if(soups.length){var p=st.soupPick&&st.soupPick[r[0]];x.soup=soups.filter(function(d){return d[0]==p})[0]||lightest(soups)}
-    else x.noSoup=true;
+    else x.noSoup=r[4].some(function(d){return d[6]=="s"})?"filtr":true;
   }
   if(st.addsalad){if(sal.length)x.salad=lightest(sal);else x.noSalad=true}
   return x;
@@ -532,7 +538,7 @@ function prep(r){
     var add=[x.soup,x.salad].filter(Boolean),parts=["jídlo "+d[2]];
     add.forEach(function(a){o[2]+=a[2];o[3]+=a[3];o[4]+=a[4];o[5]+=a[5];parts.push("+ "+short(a[0])+" "+a[2])});
     if(add.length){var p=price(d);add.forEach(function(a){p+=price(a)});if(p)o[1]=p+" Kč";parts.push("= "+o[2]+" kcal")}
-    if(x.noSoup)parts.push("(polévku nemá)");
+    if(x.noSoup)parts.push(x.noSoup=="filtr"?"(žádná polévka podle filtru)":"(polévku nemá)");
     if(x.noSalad)parts.push("(salát nemá)");
     o.combo=parts.join(" ");
     return o;
@@ -607,6 +613,9 @@ function sync(){
   R().forEach(function(r){r[4].forEach(function(d){if(!side(d)&&!st.druh[d[7]||"z"])return;if(d[8]==1)has.fm=1;if(d[8]==2)has.fp=1;if(d[10])has.off=1})});
   document.querySelectorAll("[data-inc]").forEach(function(b){var k=b.dataset.inc;if(!("t" in b.dataset))b.dataset.t=b.title||"";
     b.setAttribute("aria-pressed",!!st.inc[k]);b.classList.toggle("na",!has[k]);b.title=has[k]?b.dataset.t:"Mezi zobrazenými jídly teď žádné nejsou. Nastavení zůstává."});
+  /* „smažené přílohy“ se ukáže, až když jsou smažená hlavní jídla schovaná; druh polévek, když jsou polévky zapnuté */
+  document.querySelector("[data-inc=fp]").hidden=!!st.inc.fm;
+  var sk=$("soupkind");sk.hidden=!st.inc.so;sk.textContent={all:"všechny",veg:"jen bez masa",meat:"jen s masem"}[st.soupKind]||"všechny";sk.setAttribute("aria-pressed","true");
   $("maxk").value=st.maxk;
   $("maxk-out").textContent=st.maxk>=1400?"bez limitu":"≤ "+st.maxk;
 }
@@ -641,7 +650,8 @@ document.querySelectorAll("[data-view]").forEach(function(b){b.addEventListener(
 $("sort").addEventListener("change",function(){st.sort=this.value;change()});
 document.querySelectorAll("[data-druh]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.druh;st.druh[k]=st.druh[k]?0:1;change()})});
 ["addsoup","addsalad"].forEach(function(k){$(k).addEventListener("click",function(){st[k]=st[k]?0:1;change()})});
-document.querySelectorAll("[data-inc]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.inc;st.inc[k]=st.inc[k]?0:1;change()})});
+document.querySelectorAll("[data-inc]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.inc;st.inc[k]=st.inc[k]?0:1;if(k=="fm"&&st.inc.fm)st.inc.fp=1;change()})});
+$("soupkind").addEventListener("click",function(){st.soupKind={all:"veg",veg:"meat",meat:"all"}[st.soupKind]||"all";change()});
 $("maxk").addEventListener("input",function(){st.maxk=+this.value;change()});
 $("reset").addEventListener("click",function(){st=clone(DEF);change()});
 $("days").addEventListener("click",function(ev){var b=ev.target.closest("[data-day]");if(b){sel=+b.dataset.day;render()}});
