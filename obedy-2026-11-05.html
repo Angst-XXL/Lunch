@@ -478,8 +478,9 @@ var SORTS={
 };
 function side(d){return d[6]=="s"||d[6]=="p"}
 function isSalad(d){return d[6]=="p"&&/salát/i.test(d[0])}
+/* druh platí jen na hlavní jídla; polévky a saláty řídí štítky Polévky a Saláty (smažené a vnitřnosti platí na všechno) */
 function okProps(d){
-  if(!st.druh[d[7]||"z"])return false;
+  if(!side(d)&&!st.druh[d[7]||"z"])return false;
   if(!st.inc.fm&&d[8]==1)return false;
   if(!st.inc.fp&&d[8]==2)return false;
   if(!st.inc.off&&d[10])return false;
@@ -601,7 +602,7 @@ function sync(){
   ["addsoup","addsalad"].forEach(function(k){$(k).setAttribute("aria-pressed",!!st[k])});
   /* štítek, který mezi zobrazenými druhy nemá co schovat, zešedne (nastavení si pamatuje) */
   var has={fm:0,fp:0,off:0,so:1,sa:1};
-  R().forEach(function(r){r[4].forEach(function(d){if(!st.druh[d[7]||"z"])return;if(d[8]==1)has.fm=1;if(d[8]==2)has.fp=1;if(d[10])has.off=1})});
+  R().forEach(function(r){r[4].forEach(function(d){if(!side(d)&&!st.druh[d[7]||"z"])return;if(d[8]==1)has.fm=1;if(d[8]==2)has.fp=1;if(d[10])has.off=1})});
   document.querySelectorAll("[data-inc]").forEach(function(b){var k=b.dataset.inc;if(!("t" in b.dataset))b.dataset.t=b.title||"";
     b.setAttribute("aria-pressed",!!st.inc[k]);b.classList.toggle("na",!has[k]);b.title=has[k]?b.dataset.t:"Mezi zobrazenými jídly teď žádné nejsou. Nastavení zůstává."});
   $("maxk").value=st.maxk;
