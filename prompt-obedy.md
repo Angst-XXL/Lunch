@@ -17,7 +17,7 @@ Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích 
 
 4) Pro každé jídlo včetně polévek odhadni kcal a bílkoviny/sacharidy/tuky v gramech (restaurace je neuvádějí, jsou to odhady). Stejné jídlo ve stejné restauraci odhadni stejně jako v předchozích dnech (najdeš je v přečtené stránce).
 
-5) V každé restauraci a každém dni označ jedno doporučené jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin. Polévka, salát, sladké jídlo ani ryba to být nemůže. Do pole tip dej krátkou neutrální radu, jak jídlo odlehčit (např. „přílohu sněz jen napůl“, „hranolky vyměň za salát“); když má restaurace víc polévek, doporuč lehčí. Stránku může vidět i někdo jiný, proto v tipech nezmiňuj osobní cíle ani zdraví konkrétního člověka.
+5) V každé restauraci a každém dni označ jedno doporučené jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin. Polévka, salát, sladké jídlo ani ryba to být nemůže. Do pole tip dej krátkou neutrální radu, jak jídlo odlehčit (např. „přílohu sněz jen napůl“, „hranolky vyměň za salát“); když má doporučené jídlo smaženou přílohu (smažené = 2), tip vždy radí ji vyměnit za vařenou přílohu nebo salát; když má restaurace víc polévek, doporuč lehčí. Stránku může vidět i někdo jiný, proto v tipech nezmiňuj osobní cíle ani zdraví konkrétního člověka.
 
 6) Pořadí restaurací v datech nehraje roli: stránka je řadí sama podle polohy diváka. Dodržuj pořadí ze seznamu výše.
 
@@ -32,7 +32,7 @@ Restaurace: [název, adresa, url, tip, [řádky]].
 - název: BEZ ikon a emoji (ikony doplní stránka sama)
 - typ: "b" doporučené, "s" polévka, "p" salát nebo příloha samostatně, "" hlavní jídlo
 - druh: "k" drůbež: kuřecí, krůtí, kachna, husa (i slepičí vývar), "v" vepřové (i uzenina, slanina, šunka, špek, karbanátek, směs, srdce, játra), "h" hovězí (i telecí), "z" bez masa (slané: sýr, vejce, zelenina, luštěniny), "d" sladké, "r" ryba. U jídla s více druhy masa dej hlavní maso.
-- smažené: 1 když je HLAVNÍ složka obalovaná nebo smažená (řízek, smažený sýr, cordon bleu, stripsy, v bramboráku, Kentucky, panko, smažený květák), jinak 0. Smažené přílohy (hranolky, krokety, smažená cibulka) se nepočítají, ty jde vyměnit.
+- smažené: 1 když je HLAVNÍ složka obalovaná nebo smažená (řízek, smažený sýr, cordon bleu, stripsy, v bramboráku, Kentucky, panko, smažený květák); 2 když je smažená jen příloha nebo doplněk (hranolky, steakové hranolky, krokety, smažené bramborové dolárky, chipsy, smažená/osmažená cibulka); 0 když na jídle nic smaženého není.
 - číslo menu: pořadové číslo jídla na zdrojové stránce, 0 = bez čísla
 Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0,4]
 

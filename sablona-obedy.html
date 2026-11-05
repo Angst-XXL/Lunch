@@ -151,7 +151,8 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
     <button type="button" class="f" data-druh="r">🐟 Ryby</button>
   </div>
   <div class="row"><span class="lbl">Skrýt</span>
-    <button type="button" class="f" id="nofried" title="Obalované nebo smažené hlavní jídlo. Přílohu (hranolky) si můžeš vyměnit, proto se nepočítá.">Smažené</button>
+    <button type="button" class="f" id="nofried" title="Skryje jídla, kde je smažená hlavní složka (řízek, smažený sýr…)">Smažené</button>
+    <button type="button" class="f" id="nofried2" hidden title="Skryje i jídla, kde je smažená jen příloha (hranolky, krokety, smažená cibulka…)">i se smaženou přílohou</button>
     <button type="button" class="f" id="nosoup">Polévky</button>
     <button type="button" class="f" id="nosalad">Saláty</button>
   </div>
@@ -205,7 +206,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 //  typ: "b" doporučené, "s" polévka, "p" salát/příloha, "" hlavní jídlo
 //  druh: "k" drůbež (kuřecí, krůtí, kachna, husa), "v" vepřové (i uzenina, slanina, šunka), "h" hovězí,
 //        "z" bez masa (slané), "d" sladké (vdolečky, sladké knedlíky, palačinky, žemlovka…), "r" ryba
-//  smažené: 1 = obalované/smažené hlavní jídlo, 0 = ne
+//  smažené: 1 = obalovaná/smažená hlavní složka, 2 = smažená jen příloha (hranolky, krokety, smažená cibulka…), 0 = nic smaženého
 //  číslo menu: pořadové číslo jídla na zdrojové stránce (pro objednávání); 0 = bez čísla
 // AKT: kdy byla data stažena a zkontrolována, ISO čas s pražským posunem, např. "2026-11-04T07:22:00+01:00"
 var AKT="";
@@ -338,7 +339,7 @@ function side(d){return d[6]=="s"||d[6]=="p"}
 function isSalad(d){return d[6]=="p"&&/salát/i.test(d[0])}
 function ok(d){
   if(!st.druh[d[7]||"z"])return false;
-  if(st.nofried&&d[8])return false;
+  if(st.nofried&&d[8]&&(d[8]==1||st.nofried==2))return false;
   if(st.nosoup&&d[6]=="s")return false;
   if(st.nosalad&&isSalad(d))return false;
   if(st.maxk<1400&&!side(d)&&d[2]>st.maxk)return false;
@@ -438,7 +439,9 @@ function sync(){
   $("sort").value=st.sort;
   $("sort").options[0].text=st.view=="all"?"Výchozí (bílkoviny na 100 kcal)":"Výchozí (podle restaurace)";
   document.querySelectorAll("[data-druh]").forEach(function(b){b.setAttribute("aria-pressed",!!st.druh[b.dataset.druh])});
-  ["nofried","nosoup","nosalad","addsoup","addsalad"].forEach(function(k){$(k).setAttribute("aria-pressed",!!st[k])});
+  ["nosoup","nosalad","addsoup","addsalad"].forEach(function(k){$(k).setAttribute("aria-pressed",!!st[k])});
+  $("nofried").setAttribute("aria-pressed",!!st.nofried);
+  $("nofried2").hidden=!st.nofried;$("nofried2").setAttribute("aria-pressed",st.nofried==2);
   $("maxk").value=st.maxk;
   $("maxk-out").textContent=st.maxk>=1400?"bez limitu":"≤ "+st.maxk;
 }
@@ -472,7 +475,9 @@ document.querySelectorAll("[data-theme-set]").forEach(function(b){b.addEventList
 document.querySelectorAll("[data-view]").forEach(function(b){b.addEventListener("click",function(){st.view=b.dataset.view;change()})});
 $("sort").addEventListener("change",function(){st.sort=this.value;change()});
 document.querySelectorAll("[data-druh]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.druh;st.druh[k]=st.druh[k]?0:1;change()})});
-["nofried","nosoup","nosalad","addsoup","addsalad"].forEach(function(k){$(k).addEventListener("click",function(){st[k]=st[k]?0:1;change()})});
+["nosoup","nosalad","addsoup","addsalad"].forEach(function(k){$(k).addEventListener("click",function(){st[k]=st[k]?0:1;change()})});
+$("nofried").addEventListener("click",function(){st.nofried=st.nofried?0:1;change()});
+$("nofried2").addEventListener("click",function(){st.nofried=st.nofried==2?1:2;change()});
 $("maxk").addEventListener("input",function(){st.maxk=+this.value;change()});
 $("reset").addEventListener("click",function(){st=clone(DEF);change()});
 $("days").addEventListener("click",function(ev){var b=ev.target.closest("[data-day]");if(b){sel=+b.dataset.day;render()}});
