@@ -1,6 +1,6 @@
 # Každých 30 minut dopoledne (v pracovní dny) zkontroluje menu na menicka.cz.
-# Když se změní, založí (nebo doplní) issue „Změna menu …“ – GitHub pošle upozornění.
-# Claude se tím nespouští; aktualizaci tabulky si spustíš ručně, když budeš chtít.
+# Když se změní, zavolá malou úlohu „Obědy upozornění“, která pošle push do iPhonu.
+# Tabulka se tím nepřepočítá; aktualizaci si spustíš ručně, když budeš chtít.
 name: Kontrola změn menu
 
 on:
@@ -17,7 +17,6 @@ on:
 
 permissions:
   contents: read
-  issues: write
 
 concurrency:
   group: kontrola-menu
@@ -50,32 +49,28 @@ jobs:
         if: inputs.zkouska
         run: printf '**Zkušební upozornění** – takhle bude vypadat zpráva o změně menu.\n- ➕ Ukázkové nové jídlo – 159 Kč\n- ➖ Ukázkové zrušené jídlo – 149 Kč\n' > zprava.md
 
-      - name: Pošli upozornění
+      - name: Pošli upozornění do iPhonu (přes úlohu „Obědy upozornění“)
         if: hashFiles('zprava.md') != ''
         env:
-          GH_TOKEN: ${{ github.token }}
-          VLASTNIK: ${{ github.repository_owner }}
+          FIRE_URL: ${{ secrets.CLAUDE_FIRE_URL }}
+          FIRE_TOKEN: ${{ secrets.CLAUDE_FIRE_TOKEN }}
         run: |
-          DNES=$(TZ=Europe/Prague date +%-d.%-m.%Y)
-          CAS=$(TZ=Europe/Prague date +%H:%M)
-          NAZEV="Změna menu $DNES"
-          {
-            echo "@$VLASTNIK menu se změnilo (kontrola v $CAS):"
-            echo
+          if [ -z "$FIRE_URL" ] || [ -z "$FIRE_TOKEN" ]; then
+            echo "::warning::Chybí tajné údaje CLAUDE_FIRE_URL / CLAUDE_FIRE_TOKEN – upozornění se neposlalo."
             cat zprava.md
-            echo
-            echo "---"
-            echo "Aktualizovat tabulku (spustí Clauda): https://claude.ai/code/routines/trig_01YUMfvGqRm9kLhMgX3tjxCn"
-            echo "Tabulka: https://angst-xxl.github.io/Lunch/"
-          } > telo.md
-          CISLO=$(gh issue list --state open --search "\"$NAZEV\" in:title" --json number,title \
-                  --jq "map(select(.title == \"$NAZEV\"))[0].number // empty")
-          if [ -n "$CISLO" ]; then
-            gh issue comment "$CISLO" --body-file telo.md
-          else
-            # staré otevřené upozornění zavři, ať se nehromadí
-            for N in $(gh issue list --state open --search "\"Změna menu\" in:title" --json number --jq '.[].number'); do
-              gh issue close "$N"
-            done
-            gh issue create --title "$NAZEV" --body-file telo.md
+            exit 0
           fi
+          python3 - <<'PY' > telo.json
+          import json, datetime
+          from zoneinfo import ZoneInfo
+          cas = datetime.datetime.now(ZoneInfo("Europe/Prague")).strftime("%H:%M")
+          zprava = open("zprava.md", encoding="utf-8").read().replace("**", "").strip()
+          print(json.dumps({"text": f"Změna menu ({cas}):\n{zprava}"}, ensure_ascii=False))
+          PY
+          curl -sS --fail-with-body -X POST "$FIRE_URL" \
+            -H "Authorization: Bearer $FIRE_TOKEN" \
+            -H "anthropic-beta: experimental-cc-routine-2026-04-01" \
+            -H "anthropic-version: 2023-06-01" \
+            -H "Content-Type: application/json" \
+            --data-binary @telo.json -o odpoved.json
+          echo "Upozornění odesláno."

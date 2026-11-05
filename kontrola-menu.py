@@ -3,7 +3,7 @@
 
 Stáhne stránky restaurací, vytáhne dnešní jídla a porovná je s minulou kontrolou
 (soubor stav-menu.json). Když se něco změnilo, zapíše zprávu do souboru zprava.md,
-ze které workflow udělá upozornění (issue na GitHubu). Nic dalšího nespouští.
+ze které workflow udělá upozornění (push přes úlohu „Obědy upozornění“). Nic dalšího nespouští.
 """
 import datetime, html, json, os, re, sys, urllib.request
 from zoneinfo import ZoneInfo
