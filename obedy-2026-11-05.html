@@ -52,7 +52,8 @@ button:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visi
 .seg button{border:0;background:transparent;padding:5px 12px;cursor:pointer;font-size:.85rem}
 .seg button[aria-pressed="true"]{background:var(--on);color:var(--on-fg)}
 .f{border:1px solid var(--line);background:transparent;border-radius:99px;padding:4px 10px;cursor:pointer;font-size:.85rem}
-.f[aria-pressed="true"]{background:var(--on);color:var(--on-fg);border-color:var(--on)}
+/* zapnutý štítek filtru: světle zelený, aby byly ikony vidět v obou režimech */
+.f[aria-pressed="true"]{background:var(--best-bg);color:var(--best);border-color:var(--best)}
 select{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:.85rem;max-width:100%}
 input[type=text]{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-size:.85rem;flex:1 1 220px;min-width:0;max-width:100%}
 input[type=range]{flex:1 1 140px;max-width:260px;accent-color:var(--best)}
@@ -152,7 +153,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
     <button type="button" class="f tg" data-druh="k">Drůbež</button>
     <button type="button" class="f tg" data-druh="v">Vepřové</button>
     <button type="button" class="f tg" data-druh="h">Hovězí</button>
-    <button type="button" class="f tg" data-druh="z"><span class="nm" aria-hidden="true"></span> Bez masa</button>
+    <button type="button" class="f tg" data-druh="z">🥦 Bez masa</button>
     <button type="button" class="f tg" data-druh="d">🍰 Sladké</button>
     <button type="button" class="f tg" data-druh="r">🐟 Ryby</button>
   </div>
@@ -163,7 +164,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
     <button type="button" class="f tg" data-inc="so">Polévky</button>
     <button type="button" class="f tg" data-inc="sa">Saláty</button>
   </div>
-  <div class="row"><span class="hint">Tmavý štítek = jídla se ukazují, přeškrtnutý = jsou schovaná.</span></div>
+  <div class="row"><span class="hint">Zelený štítek = jídla se ukazují, přeškrtnutý = jsou schovaná.</span></div>
   <div class="row"><span class="lbl">Oběd</span>
     <button type="button" class="f" id="addsoup">+ 🍲 Polévka</button>
     <button type="button" class="f" id="addsalad">+ Salát</button>
@@ -201,7 +202,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
   </details>
 </div>
 
-<div class="legend"><span class="chip">✅ doporučené jídlo</span><span class="chip">☑ náhradní doporučení (původní je skryté filtrem)</span><span class="chip">🍲 polévka</span><span class="chip"><span class="nm" aria-hidden="true"></span> bez masa</span><span class="chip">🍰 sladké</span><span class="chip">🐟 ryba</span><span class="chip">B bílkoviny · S sacharidy · T tuky (g)</span><span class="chip">B/100 = g bílkovin na 100 kcal</span><span class="chip">barva kcal a B: <span class="grad" aria-hidden="true"></span> lepší → horší</span></div>
+<div class="legend"><span class="chip">✅ doporučené jídlo</span><span class="chip">☑ náhradní doporučení (původní je skryté filtrem)</span><span class="chip">🍲 polévka</span><span class="chip">🥦 bez masa</span><span class="chip">🍰 sladké</span><span class="chip">🐟 ryba</span><span class="chip">B bílkoviny · S sacharidy · T tuky (g)</span><span class="chip">B/100 = g bílkovin na 100 kcal</span><span class="chip">barva kcal a B: <span class="grad" aria-hidden="true"></span> lepší → horší</span></div>
 <div id="out" style="display:contents"></div>
 <div class="hiddenlist" id="hiddenlist" hidden></div>
 <p class="note">Kalorie a makra jsou hrubé odhady, restaurace je neuvádějí. Jídla a ceny z jednotlivých stránek na <a href="https://www.menicka.cz/zlin.html">menicka.cz</a>.</p>
@@ -506,7 +507,7 @@ function sorted(list,key){
   return f?list.slice().sort(function(a,b){return f(a,b)||a.i-b.i}):list;
 }
 function icons(d){
-  return (d[6]=="b"?"✅ ":"")+(d.sub?"☑ ":"")+(d[6]=="s"?"🍲 ":"")+(d[7]=="z"&&!side(d)?'<span class="nm" title="bez masa"></span> ':"")+(d[7]=="d"?"🍰 ":"")+(d[7]=="r"?"🐟 ":"");
+  return (d[6]=="b"?"✅ ":"")+(d.sub?"☑ ":"")+(d[6]=="s"?"🍲 ":"")+(d[7]=="z"&&!side(d)?"🥦 ":"")+(d[7]=="d"?"🍰 ":"")+(d[7]=="r"?"🐟 ":"");
 }
 function lightest(list){return list.slice().sort(function(a,b){return a[2]-b[2]})[0]}
 function short(s){s=String(s).replace(/\s*\(.*?\)\s*/g," ").trim();return s.length>26?s.slice(0,25).trim()+"…":s}
