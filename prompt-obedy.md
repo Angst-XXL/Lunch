@@ -2,7 +2,7 @@
 
 1) Volné dny: v sobotu napiš jen "Dnes je volno" a skonči (stránku nepřepisuj, oznámení neposílej). V neděli nebo ve státní svátek v ČR připrav přehled jen na další pracovní den (v neděli je to pondělí, přeskoč i svátky): DNY pak obsahuje jen ten jeden den, dnešek ne. Když ten den ještě žádná restaurace menu nezveřejnila, stránku nepřepisuj, napiš to a pošli oznámení podle bodu 11.
 
-2) Šablona: zavolej nástroj Artifact s action "read" a url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK. Vrátí aktuální HTML stránky a uloží ho do souboru. Tato stránka JE šablona: obsahuje záložky dnů, řazení podle polohy diváka, oblíbené restaurace, filtry, třídění, sloupec s číslem menu, přepínače „+ Polévka / + Salát“, barevné odstíny, přepínač tématu, tlačítko pro ruční aktualizaci a vykreslovací kód. Neměň v ní nic kromě bloku mezi řádky "// ===== DATA:START" a "// ===== DATA:END =====". Pokud read selže, nic nevymýšlej, napiš proč a skonči.
+2) Šablona: zavolej nástroj Artifact s action "read" a url https://claude.ai/artifact/47hfrdXTR3C8J7uo4pLsTK. Vrátí aktuální HTML stránky a uloží ho do souboru. Tato stránka JE šablona: obsahuje záložky dnů, řazení podle polohy diváka, oblíbené restaurace, filtry (Druh, Zahrnout), náhradní doporučení, třídění, sloupec s číslem menu, přepínače „+ Polévka / + Salát“, barevné odstíny, přepínač tématu, tlačítko pro ruční aktualizaci a vykreslovací kód. Neměň v ní nic kromě bloku mezi řádky "// ===== DATA:START" a "// ===== DATA:END =====". Pokud read selže, nic nevymýšlej, napiš proč a skonči.
 
 3) Stáhni menu z těchto stránek (každá restaurace má vlastní stránku, přehled města zlin.html je nespolehlivý, nepoužívej ho):
 - Prostě Restaurace, Vavrečkova 7074: https://www.menicka.cz/8250-proste-restaurace.html
@@ -17,7 +17,7 @@ Názvy jídel ber ze stránek, čísla alergenů vynech, poznámky o nápojích 
 
 4) Pro každé jídlo včetně polévek odhadni kcal a bílkoviny/sacharidy/tuky v gramech (restaurace je neuvádějí, jsou to odhady). Stejné jídlo ve stejné restauraci odhadni stejně jako v předchozích dnech (najdeš je v přečtené stránce).
 
-5) V každé restauraci a každém dni označ jedno doporučené jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin. Polévka, salát, sladké jídlo ani ryba to být nemůže. Do pole tip dej krátkou neutrální radu, jak jídlo odlehčit (např. „přílohu sněz jen napůl“, „hranolky vyměň za salát“); když má doporučené jídlo smaženou přílohu (smažené = 2), tip vždy radí ji vyměnit za vařenou přílohu nebo salát; když má restaurace víc polévek, doporuč lehčí. Stránku může vidět i někdo jiný, proto v tipech nezmiňuj osobní cíle ani zdraví konkrétního člověka.
+5) V každé restauraci a každém dni označ jedno doporučené jídlo (typ "b"): málo kcal, sacharidů a tuků, hodně bílkovin. Polévka, salát, sladké jídlo, smažené hlavní jídlo (smažené = 1), ryba ani vnitřnosti to být nemůže. Do pole tip dej krátkou neutrální radu, jak jídlo odlehčit (např. „přílohu sněz jen napůl“, „hranolky vyměň za salát“); když má doporučené jídlo smaženou přílohu (smažené = 2), tip vždy radí ji vyměnit za vařenou přílohu nebo salát; když má restaurace víc polévek, doporuč lehčí. Stránku může vidět i někdo jiný, proto v tipech nezmiňuj osobní cíle ani zdraví konkrétního člověka.
 
 6) Pořadí restaurací v datech nehraje roli: stránka je řadí sama podle polohy diváka. Dodržuj pořadí ze seznamu výše.
 
@@ -28,13 +28,14 @@ var DNY=[
 {datum:"<RRRR-MM-DD další pracovní den>", den:"<např. pátek 6. 11. 2026>", R:[ ...restaurace... ]}
 ];
 Restaurace: [název, adresa, url, tip, [řádky]].
-Řádek: [název, cena, kcal, B, S, T, typ, druh, smažené, číslo menu]
+Řádek: [název, cena, kcal, B, S, T, typ, druh, smažené, číslo menu, vnitřnosti]
 - název: BEZ ikon a emoji (ikony doplní stránka sama)
 - typ: "b" doporučené, "s" polévka, "p" salát nebo příloha samostatně, "" hlavní jídlo
 - druh: "k" drůbež: kuřecí, krůtí, kachna, husa (i slepičí vývar), "v" vepřové (i uzenina, slanina, šunka, špek, karbanátek, směs, srdce, játra), "h" hovězí (i telecí), "z" bez masa (slané: sýr, vejce, zelenina, luštěniny), "d" sladké, "r" ryba. U jídla s více druhy masa dej hlavní maso.
 - smažené: 1 když je HLAVNÍ složka obalovaná nebo smažená (řízek, smažený sýr, cordon bleu, stripsy, v bramboráku, Kentucky, panko, smažený květák); 2 když je smažená jen příloha nebo doplněk (hranolky, steakové hranolky, krokety, smažené bramborové dolárky, chipsy, smažená/osmažená cibulka); 0 když na jídle nic smaženého není.
 - číslo menu: pořadové číslo jídla na zdrojové stránce, 0 = bez čísla
-Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0,4]
+- vnitřnosti: 1 když jídlo (i polévka) obsahuje vnitřnosti: játra, srdce, ledvinky, žaludky, dršťky, jazyk, mozeček, plíčky, a také jitrnice, jelito, prejt, tlačenka; jinak 0. Párky, klobásy a uzeniny vnitřnosti nejsou.
+Příklad: ["Pečené kuřecí stehno, rýže, okurek (240 g)","179 Kč",700,48,62,27,"b","k",0,4,0]
 
 8) Ulož výsledek jako obedy-YYYY-MM-DD.html do pracovního adresáře. Před zveřejněním ověř, že stránka jde otevřít bez chyb ve skriptu (např. v Playwrightu, bez chyb v konzoli) a že ukazuje záložku „Dnes“ (v neděli a ve svátek záložku dalšího pracovního dne).
 

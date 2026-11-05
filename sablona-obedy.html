@@ -7,17 +7,17 @@
   --bg:#f3f5f2; --surface:#ffffff; --fg:#1d2a24; --muted:#5b6b62; --line:#dde3dd;
   --best:#1f7a4d; --best-bg:#e3f3ea; --fish:#2b6cb0; --fish-bg:#e4eef9; --soup:#9a6b12; --soup-bg:#f6ecd6;
   --on:#1d2a24; --on-fg:#f3f5f2; --warn:#8a4b0f; --warn-bg:#fbe9d3; --ban:#d0342c; --star:#c98a00;
-  --tint-a:.22;
+  --tint-a:.22; --sub-bg:#f1f8f3;
   --f-body:'Figtree',system-ui,sans-serif; --f-num:'IBM Plex Mono',ui-monospace,monospace;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --bg:#121a16; --surface:#1b2520; --fg:#e8eee9; --muted:#9bab9f; --line:#2c3a33;
   --best:#5fd197; --best-bg:#163626; --fish:#7db3ee; --fish-bg:#172a40; --soup:#e3b55a; --soup-bg:#3a2f14;
-  --on:#e8eee9; --on-fg:#121a16; --warn:#f0b36b; --warn-bg:#3d2810; --ban:#ff6b5e; --star:#f2c14e; --tint-a:.30; color-scheme:dark}}
+  --on:#e8eee9; --on-fg:#121a16; --warn:#f0b36b; --warn-bg:#3d2810; --ban:#ff6b5e; --star:#f2c14e; --tint-a:.30; --sub-bg:#15241c; color-scheme:dark}}
 :root[data-theme="dark"]{
   --bg:#121a16; --surface:#1b2520; --fg:#e8eee9; --muted:#9bab9f; --line:#2c3a33;
   --best:#5fd197; --best-bg:#163626; --fish:#7db3ee; --fish-bg:#172a40; --soup:#e3b55a; --soup-bg:#3a2f14;
-  --on:#e8eee9; --on-fg:#121a16; --warn:#f0b36b; --warn-bg:#3d2810; --ban:#ff6b5e; --star:#f2c14e; --tint-a:.30; color-scheme:dark}
+  --on:#e8eee9; --on-fg:#121a16; --warn:#f0b36b; --warn-bg:#3d2810; --ban:#ff6b5e; --star:#f2c14e; --tint-a:.30; --sub-bg:#15241c; color-scheme:dark}
 :root[data-theme="light"]{color-scheme:light}
 body{background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.4;
   padding-block:20px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -95,6 +95,10 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 .m b.t{padding:0 4px;border-radius:4px}
 .m span::before{content:attr(data-l)" ";font-family:var(--f-body);font-size:.72rem}
 .best{background:var(--best-bg)} .best .name{color:var(--best)}
+.best.sub{background:var(--sub-bg)}
+.subnote{padding:6px 14px;font-size:.8rem;color:var(--muted);border-top:1px solid var(--line)}
+/* štítky filtrů: zapnuto = tmavé (ukázat), vypnuto = přeškrtnuté (schovat) */
+.f.tg[aria-pressed="false"]{text-decoration:line-through;text-decoration-thickness:1.5px;color:var(--muted)}
 .fish .name{color:var(--fish)} .soup .name{color:var(--soup)}
 .note{font-size:.8rem;color:var(--muted)}
 .note a{color:inherit}
@@ -143,19 +147,21 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
     </select>
   </div>
   <div class="row"><span class="lbl">Druh</span>
-    <button type="button" class="f" data-druh="k">Drůbež</button>
-    <button type="button" class="f" data-druh="v">Vepřové</button>
-    <button type="button" class="f" data-druh="h">Hovězí</button>
-    <button type="button" class="f" data-druh="z"><span class="nm" aria-hidden="true"></span> Bez masa</button>
-    <button type="button" class="f" data-druh="d">🍰 Sladké</button>
-    <button type="button" class="f" data-druh="r">🐟 Ryby</button>
+    <button type="button" class="f tg" data-druh="k">Drůbež</button>
+    <button type="button" class="f tg" data-druh="v">Vepřové</button>
+    <button type="button" class="f tg" data-druh="h">Hovězí</button>
+    <button type="button" class="f tg" data-druh="z"><span class="nm" aria-hidden="true"></span> Bez masa</button>
+    <button type="button" class="f tg" data-druh="d">🍰 Sladké</button>
+    <button type="button" class="f tg" data-druh="r">🐟 Ryby</button>
   </div>
-  <div class="row"><span class="lbl">Skrýt</span>
-    <button type="button" class="f" id="nofried" title="Skryje jídla, kde je smažená hlavní složka (řízek, smažený sýr…)">Smažené</button>
-    <button type="button" class="f" id="nofried2" hidden title="Skryje i jídla, kde je smažená jen příloha (hranolky, krokety, smažená cibulka…)">i se smaženou přílohou</button>
-    <button type="button" class="f" id="nosoup">Polévky</button>
-    <button type="button" class="f" id="nosalad">Saláty</button>
+  <div class="row"><span class="lbl">Zahrnout</span>
+    <button type="button" class="f tg" data-inc="fm" title="Jídla, kde je smažená hlavní složka (řízek, smažený sýr…)">Smažené hlavní jídlo</button>
+    <button type="button" class="f tg" data-inc="fp" title="Jídla, kde je smažená jen příloha (hranolky, krokety, smažená cibulka…)">Smažená příloha</button>
+    <button type="button" class="f tg" data-inc="off" title="Játra, srdce, ledvinky, dršťky, jazyk, jitrnice, jelito, prejt, tlačenka…">Vnitřnosti</button>
+    <button type="button" class="f tg" data-inc="so">Polévky</button>
+    <button type="button" class="f tg" data-inc="sa">Saláty</button>
   </div>
+  <div class="row"><span class="hint">Tmavý štítek = jídla se ukazují, přeškrtnutý = jsou schovaná.</span></div>
   <div class="row"><span class="lbl">Oběd</span>
     <button type="button" class="f" id="addsoup">+ 🍲 Polévka</button>
     <button type="button" class="f" id="addsalad">+ Salát</button>
@@ -193,7 +199,7 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
   </details>
 </div>
 
-<div class="legend"><span class="chip">✅ doporučené jídlo</span><span class="chip">🍲 polévka</span><span class="chip"><span class="nm" aria-hidden="true"></span> bez masa</span><span class="chip">🍰 sladké</span><span class="chip">🐟 ryba</span><span class="chip">B bílkoviny · S sacharidy · T tuky (g)</span><span class="chip">B/100 = g bílkovin na 100 kcal</span><span class="chip">barva kcal a B: <span class="grad" aria-hidden="true"></span> lepší → horší</span></div>
+<div class="legend"><span class="chip">✅ doporučené jídlo</span><span class="chip">☑ náhradní doporučení (původní je skryté filtrem)</span><span class="chip">🍲 polévka</span><span class="chip"><span class="nm" aria-hidden="true"></span> bez masa</span><span class="chip">🍰 sladké</span><span class="chip">🐟 ryba</span><span class="chip">B bílkoviny · S sacharidy · T tuky (g)</span><span class="chip">B/100 = g bílkovin na 100 kcal</span><span class="chip">barva kcal a B: <span class="grad" aria-hidden="true"></span> lepší → horší</span></div>
 <div id="out" style="display:contents"></div>
 <div class="hiddenlist" id="hiddenlist" hidden></div>
 <p class="note">Kalorie a makra jsou hrubé odhady, restaurace je neuvádějí. Jídla a ceny z jednotlivých stránek na <a href="https://www.menicka.cz/zlin.html">menicka.cz</a>.</p>
@@ -202,12 +208,13 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 // ===== DATA:START (ranní úloha mění jen tento blok) =====
 // DNY: dnešek a další pracovní den. Každý den: {datum:"RRRR-MM-DD", den:"čtvrtek 5. 11. 2026", R:[restaurace]}
 // Restaurace: [název, adresa, url, tip, [řádky]]  (prázdné řádky = ten den bez menu)
-// Řádek: [název bez ikon, cena, kcal, B, S, T, typ, druh, smažené, číslo menu]
+// Řádek: [název bez ikon, cena, kcal, B, S, T, typ, druh, smažené, číslo menu, vnitřnosti]
 //  typ: "b" doporučené, "s" polévka, "p" salát/příloha, "" hlavní jídlo
 //  druh: "k" drůbež (kuřecí, krůtí, kachna, husa), "v" vepřové (i uzenina, slanina, šunka), "h" hovězí,
 //        "z" bez masa (slané), "d" sladké (vdolečky, sladké knedlíky, palačinky, žemlovka…), "r" ryba
 //  smažené: 1 = obalovaná/smažená hlavní složka, 2 = smažená jen příloha (hranolky, krokety, smažená cibulka…), 0 = nic smaženého
 //  číslo menu: pořadové číslo jídla na zdrojové stránce (pro objednávání); 0 = bez čísla
+//  vnitřnosti (11. pole): 1 = játra, srdce, ledvinky, žaludky, dršťky, jazyk, mozeček, plíčky, jitrnice, jelito, prejt, tlačenka; 0 = ne
 // AKT: kdy byla data stažena a zkontrolována, ISO čas s pražským posunem, např. "2026-11-04T07:22:00+01:00"
 var AKT="";
 var DNY=[];
@@ -221,12 +228,15 @@ var DAYV=["v neděli","v pondělí","v úterý","ve středu","ve čtvrtek","v p�
 var DAYS=["Ne","Po","Út","St","Čt","Pá","So"], DAYL=["neděle","pondělí","úterý","středa","čtvrtek","pátek","sobota"];
 
 var KEY="obedy-filtry-v1", KEYP="obedy-osobni-v1";
-var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,d:1,r:0},nofried:0,nosoup:0,nosalad:0,maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
+var DEF={view:"rest",sort:"def",druh:{k:1,v:1,h:1,z:1,d:1,r:0},inc:{fm:1,fp:1,off:1,so:1,sa:1},maxk:1400,addsoup:0,addsalad:0,soupPick:{}};
 var PDEF={work:{name:"Vavrečkova 7074",lat:49.224476,lng:17.659139},home:null,
   sched:{1:"work",2:"work",3:"work",4:"home",5:"home"},theme:"auto",fav:{work:{},home:{}},hide:{work:{},home:{}}};
 function clone(o){return JSON.parse(JSON.stringify(o))}
 var st=clone(DEF), ps=clone(PDEF);
-try{var sv=JSON.parse(localStorage.getItem(KEY)||"null");if(sv&&sv.druh){for(var k in DEF)if(k in sv)st[k]=sv[k];if(!("d" in st.druh))st.druh.d=1}}catch(err){}
+try{var sv=JSON.parse(localStorage.getItem(KEY)||"null");if(sv&&sv.druh){for(var k in DEF)if(k in sv)st[k]=sv[k];if(!("d" in st.druh))st.druh.d=1;
+  /* převod staršího nastavení „Skrýt“ na „Zahrnout“ */
+  if(!sv.inc){st.inc=clone(DEF.inc);if(sv.nofried)st.inc.fm=0;if(sv.nofried==2)st.inc.fp=0;if(sv.nosoup)st.inc.so=0;if(sv.nosalad)st.inc.sa=0}
+  for(var k3 in DEF.inc)if(!(k3 in st.inc))st.inc[k3]=1}}catch(err){}
 try{var pv=JSON.parse(localStorage.getItem(KEYP)||"null");if(pv&&typeof pv=="object"){for(var k2 in PDEF)if(k2 in pv)ps[k2]=pv[k2]}}catch(err){}
 /* oblíbené a skryté zvlášť pro práci a domov (starší uložené nastavení platí pro obě místa) */
 function perPlace(x){if(!x||typeof x!="object")return {work:{},home:{}};if(x.work||x.home)return {work:x.work||{},home:x.home||{}};return {work:clone(x),home:clone(x)}}
@@ -337,25 +347,41 @@ var SORTS={
 };
 function side(d){return d[6]=="s"||d[6]=="p"}
 function isSalad(d){return d[6]=="p"&&/salát/i.test(d[0])}
-function ok(d){
+function okProps(d){
   if(!st.druh[d[7]||"z"])return false;
-  if(st.nofried&&d[8]&&(d[8]==1||st.nofried==2))return false;
-  if(st.nosoup&&d[6]=="s")return false;
-  if(st.nosalad&&isSalad(d))return false;
+  if(!st.inc.fm&&d[8]==1)return false;
+  if(!st.inc.fp&&d[8]==2)return false;
+  if(!st.inc.off&&d[10])return false;
+  return true;
+}
+function ok(d){
+  if(!okProps(d))return false;
+  if(!st.inc.so&&d[6]=="s")return false;
+  if(!st.inc.sa&&isSalad(d))return false;
   if(st.maxk<1400&&!side(d)&&d[2]>st.maxk)return false;
   return true;
+}
+/* náhradní doporučení: když filtry schovají ✅, vyber mezi zobrazenými hlavními jídly nejvíc bílkovin na 100 kcal
+   (nikdy sladké ani smažené hlavní jídlo); porovnává se samotné jídlo bez přičtené polévky a salátu */
+function pickSub(items,vis){
+  var orig=items.filter(function(d){return d[6]=="b"})[0];
+  if(!orig||vis.indexOf(orig)>=0)return {orig:orig,origVis:!!orig,sub:null};
+  var c=vis.filter(function(d){return !side(d)&&d[7]!="d"&&d[8]!=1});
+  c.sort(function(a,b){var ra=a.b0/a.k0,rb=b.b0/b.k0;return (rb-ra)||(a.k0-b.k0)});
+  var sub=c[0]||null;if(sub)sub.sub=true;
+  return {orig:orig,origVis:false,sub:sub};
 }
 function sorted(list,key){
   var f=SORTS[key];
   return f?list.slice().sort(function(a,b){return f(a,b)||a.i-b.i}):list;
 }
 function icons(d){
-  return (d[6]=="b"?"✅ ":"")+(d[6]=="s"?"🍲 ":"")+(d[7]=="z"&&!side(d)?'<span class="nm" title="bez masa"></span> ':"")+(d[7]=="d"?"🍰 ":"")+(d[7]=="r"?"🐟 ":"");
+  return (d[6]=="b"?"✅ ":"")+(d.sub?"☑ ":"")+(d[6]=="s"?"🍲 ":"")+(d[7]=="z"&&!side(d)?'<span class="nm" title="bez masa"></span> ':"")+(d[7]=="d"?"🍰 ":"")+(d[7]=="r"?"🐟 ":"");
 }
 function lightest(list){return list.slice().sort(function(a,b){return a[2]-b[2]})[0]}
 function short(s){s=String(s).replace(/\s*\(.*?\)\s*/g," ").trim();return s.length>26?s.slice(0,25).trim()+"…":s}
 function extras(r){
-  var soups=r[4].filter(function(d){return d[6]=="s"}),sal=r[4].filter(isSalad),x={soup:null,salad:null,noSoup:false,noSalad:false};
+  var soups=r[4].filter(function(d){return d[6]=="s"&&okProps(d)}),sal=r[4].filter(function(d){return isSalad(d)&&okProps(d)}),x={soup:null,salad:null,noSoup:false,noSalad:false};
   if(st.addsoup){
     if(soups.length){var p=st.soupPick&&st.soupPick[r[0]];x.soup=soups.filter(function(d){return d[0]==p})[0]||lightest(soups)}
     else x.noSoup=true;
@@ -366,7 +392,7 @@ function extras(r){
 function prep(r){
   var x=extras(r);
   return r[4].map(function(d,i){
-    var o=d.slice();o.i=i;o.rn=r[0];
+    var o=d.slice();o.i=i;o.rn=r[0];o.k0=d[2];o.b0=d[3];
     if(d[6]=="s"&&st.addsoup)o.picked=(x.soup&&x.soup[0]==d[0]);
     if(side(d)||!(st.addsoup||st.addsalad))return o;
     var add=[x.soup,x.salad].filter(Boolean),parts=["jídlo "+d[2]];
@@ -387,7 +413,7 @@ function cols(){
   }).join('')+'</div>';
 }
 function row(d,from){
-  var cls=d[6]=="b"?"best":d[7]=="r"?"fish":d[6]=="s"?"soup":"", main=!side(d);
+  var cls=d[6]=="b"?"best":d.sub?"best sub":d[7]=="r"?"fish":d[6]=="s"?"soup":"", main=!side(d);
   return '<div class="dish '+cls+'"><div class="num">'+(d[9]?d[9]+'.':'')+'</div><div class="name">'+icons(d)+e(d[0])+
   (d.picked!=null?'<button type="button" class="pick" data-r="'+e(d.rn)+'" data-s="'+e(d[0])+'" aria-pressed="'+d.picked+'">'+(d.picked?'✓ počítá se':'počítat tuto')+'</button>':'')+
   (from?'<span class="from">'+e(from)+'</span>':'')+(d.combo?'<span class="combo">'+e(d.combo)+'</span>':'')+'</div><div class="price">'+e(d[1])+'</div>'+
@@ -401,7 +427,7 @@ function render(){
   if(!days.length){html='<div class="empty">Zatím tu nejsou žádná data.</div>'}
   else if(st.view=="all"){
     var all=[];
-    visR.forEach(function(x){prep(x.r).forEach(function(d){total++;if(ok(d)){d.i=all.length;d.r=x.r[0];all.push(d)}})});
+    visR.forEach(function(x){var items=prep(x.r),vis=items.filter(ok);pickSub(items,vis);total+=items.length;vis.forEach(function(d){d.i=all.length;d.r=x.r[0];all.push(d)})});
     shown=all.length;
     var key=st.sort=="def"?"ratio":st.sort;
     all=sorted(all.filter(function(d){return !side(d)}),key).concat(sorted(all.filter(side),key));
@@ -411,15 +437,17 @@ function render(){
       var r=x.r,s=slug(r[2]),items=prep(r);
       total+=items.length;
       var vis=items.filter(ok);shown+=vis.length;
-      var best=vis.filter(function(d){return d[6]=="b"});
-      var mains=sorted(vis.filter(function(d){return d[6]!="b"&&!side(d)}),st.sort);
+      var ps2=pickSub(items,vis);
+      var best=vis.filter(function(d){return d[6]=="b"||d.sub});
+      var mains=sorted(vis.filter(function(d){return d[6]!="b"&&!d.sub&&!side(d)}),st.sort);
+      var subnote=(ps2.orig&&!ps2.origVis)?'<div class="subnote">'+(ps2.sub?'Doporučené '+(ps2.orig[9]?'č. '+ps2.orig[9]+' ':'')+'je skryté filtrem, náhradní doporučení: '+(ps2.sub[9]?'č. '+ps2.sub[9]:e(short(ps2.sub[0])))+'.':'Doporučené jídlo je skryté filtrem a jiné vhodné tu po filtrování není.')+'</div>':'';
       var sides=sorted(vis.filter(side),st.sort);
       var lst=st.sort=="num"?sorted(vis,"num"):best.concat(mains,sides);
       var hidden=items.length-vis.length;
       return '<section class="rest"><header><div class="hd"><h2><a style="color:inherit;text-decoration:none" href="'+e(r[2])+'">'+e(r[0])+'</a></h2><div class="addr">'+e(r[1])+(x.d!=null?' · '+fmtDist(x.d):'')+'</div></div>'+
         '<button type="button" class="hb fav" data-fav="'+e(s)+'" aria-pressed="'+!!fv[s]+'" title="Oblíbená '+pin+': jde nahoru">'+(fv[s]?'★ Oblíbená':'☆')+'</button>'+
         '<button type="button" class="hb" data-hide="'+e(s)+'" title="Skrýt, když jsem '+pin+'">Skrýt</button></header>'+
-        (r[3]?'<div class="tip">'+e(r[3])+'</div>':'')+
+        (r[3]&&(!ps2.orig||ps2.origVis)?'<div class="tip">'+e(r[3])+'</div>':'')+subnote+
         (!items.length?'<div class="empty">Tento den menu nemá.</div>':
           cols()+(lst.length?lst.map(function(d){return row(d)}).join(''):'<div class="empty">Filtrům neodpovídá žádné jídlo.</div>')+
           (hidden?'<div class="hid">Skryto filtrem: '+hidden+'</div>':''))+
@@ -439,9 +467,11 @@ function sync(){
   $("sort").value=st.sort;
   $("sort").options[0].text=st.view=="all"?"Výchozí (bílkoviny na 100 kcal)":"Výchozí (podle restaurace)";
   document.querySelectorAll("[data-druh]").forEach(function(b){b.setAttribute("aria-pressed",!!st.druh[b.dataset.druh])});
-  ["nosoup","nosalad","addsoup","addsalad"].forEach(function(k){$(k).setAttribute("aria-pressed",!!st[k])});
-  $("nofried").setAttribute("aria-pressed",!!st.nofried);
-  $("nofried2").hidden=!st.nofried;$("nofried2").setAttribute("aria-pressed",st.nofried==2);
+  ["addsoup","addsalad"].forEach(function(k){$(k).setAttribute("aria-pressed",!!st[k])});
+  /* štítek, který mezi zobrazenými druhy nemá co schovat, zmizí (nastavení si pamatuje) */
+  var has={fm:0,fp:0,off:0,so:1,sa:1};
+  R().forEach(function(r){r[4].forEach(function(d){if(!st.druh[d[7]||"z"])return;if(d[8]==1)has.fm=1;if(d[8]==2)has.fp=1;if(d[10])has.off=1})});
+  document.querySelectorAll("[data-inc]").forEach(function(b){var k=b.dataset.inc;b.setAttribute("aria-pressed",!!st.inc[k]);b.hidden=!has[k]});
   $("maxk").value=st.maxk;
   $("maxk-out").textContent=st.maxk>=1400?"bez limitu":"≤ "+st.maxk;
 }
@@ -475,9 +505,8 @@ document.querySelectorAll("[data-theme-set]").forEach(function(b){b.addEventList
 document.querySelectorAll("[data-view]").forEach(function(b){b.addEventListener("click",function(){st.view=b.dataset.view;change()})});
 $("sort").addEventListener("change",function(){st.sort=this.value;change()});
 document.querySelectorAll("[data-druh]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.druh;st.druh[k]=st.druh[k]?0:1;change()})});
-["nosoup","nosalad","addsoup","addsalad"].forEach(function(k){$(k).addEventListener("click",function(){st[k]=st[k]?0:1;change()})});
-$("nofried").addEventListener("click",function(){st.nofried=st.nofried?0:1;change()});
-$("nofried2").addEventListener("click",function(){st.nofried=st.nofried==2?1:2;change()});
+["addsoup","addsalad"].forEach(function(k){$(k).addEventListener("click",function(){st[k]=st[k]?0:1;change()})});
+document.querySelectorAll("[data-inc]").forEach(function(b){b.addEventListener("click",function(){var k=b.dataset.inc;st.inc[k]=st.inc[k]?0:1;change()})});
 $("maxk").addEventListener("input",function(){st.maxk=+this.value;change()});
 $("reset").addEventListener("click",function(){st=clone(DEF);change()});
 $("days").addEventListener("click",function(ev){var b=ev.target.closest("[data-day]");if(b){sel=+b.dataset.day;render()}});
