@@ -225,68 +225,8 @@ details.set summary{cursor:pointer;font-size:.85rem;font-weight:600}
 //  číslo menu: pořadové číslo jídla na zdrojové stránce (pro objednávání); 0 = bez čísla
 //  vnitřnosti (11. pole): 1 = játra, srdce, ledvinky, žaludky, dršťky, jazyk, mozeček, plíčky, brzlík, jitrnice, jelito, prejt, tlačenka; 0 = ne (oháňka a morek nejsou vnitřnosti)
 // AKT: kdy byla data stažena a zkontrolována, ISO čas s pražským posunem, např. "2026-11-04T07:22:00+01:00"
-var AKT="2026-11-20T07:22:51+01:00";
+var AKT="2026-11-22T07:21:45+01:00";
 var DNY=[
-{datum:"2026-11-20", den:"pátek 20. 11. 2026", R:[
-["Prostě Restaurace", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/8250-proste-restaurace.html", "Kuřecí medailonky: těstoviny sněz jen napůl a omáčky si dej méně.",[
- ["Zeleninová s bramborem a vejcem / malý salátek (0,3 l)","35 Kč",170,7,18,8,"s","z",0,0,0],
- ["Okurkový salát","45 Kč",60,1,8,2,"p","z",0,0,0],
- ["Tip šéfa: filírovaný flank steak na grilu, pepřová omáčka, steakové hranolky, salátek (160 g)","279 Kč",1000,50,60,58,"","h",2,0,0],
- ["Smažené vepřové řízečky, mačkané brambory s cibulkou, bylinkový dip (150 g)","169 Kč",950,40,70,55,"","v",1,1,0],
- ["Kuřecí medailonky s paprikovo-smetanovou omáčkou, těstoviny (150 g)","165 Kč",850,45,90,32,"b","k",0,2,0],
- ["Zapékané lasagne s boloňským ragú a mozzarellou, salátek (250 g)","169 Kč",750,35,60,40,"","v",0,3,0]]],
-["Pilsner Urquell Original Restaurant", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/2992-pilsner-urquell-original-restaurant.html", "Hovězí ptáček: rýži sněz jen napůl a přiobjednej rajčatový salát.",[
- ["Kyselice s uzeným masem","v menu",220,10,18,12,"s","v",0,0,0],
- ["Rajčatový salát s červenou cibulkou","39 Kč",70,2,9,3,"p","z",0,0,0],
- ["Španělský hovězí ptáček s rýží (150 g)","199 Kč",750,42,75,28,"b","h",0,1,0],
- ["Segedínský guláš s houskovým knedlíkem (150 g)","175 Kč",900,35,85,45,"","v",0,2,0],
- ["Kuřecí řízek v cornflakes strouhance s bramborovou kaší a okurkem (150 g)","175 Kč",900,42,80,45,"","k",1,3,0],
- ["Srbské rizoto se strouhaným sýrem a okurkem (250 g)","175 Kč",800,35,95,28,"","v",0,4,0],
- ["Bramborové noky se sýrovou omáčkou a filírovanou vepřovou panenkou, rukola (300 g)","185 Kč",900,40,95,40,"","v",0,5,0],
- ["Kuřecí Ondráš, zelný salát (150 g)","169 Kč",850,42,50,52,"","k",1,6,0],
- ["Smažený hermelín s vařenými brambory a tatarskou omáčkou (100 g)","189 Kč",950,32,70,60,"","z",1,7,0]]],
-["Restaurace Flip (Bernard Pub)", "Gahurova 5265, Zlín", "https://www.menicka.cz/24-restaurace-flip-bernard-pub.html", "Kuřecí směs: nudle sněz jen napůl a přidej víc zeleniny.",[
- ["Hrachová s párkem","v menu",280,14,30,11,"s","v",0,0,0],
- ["Kuřecí pikantní směs se zeleninou, opékané čínské nudle","159 Kč",800,42,85,30,"b","k",0,1,0],
- ["Segedínský guláš se smetanou, houskový knedlík","159 Kč",900,35,85,45,"","v",0,2,0],
- ["Šopský salát s balkánským sýrem a kuřecími stripsy v cornflakes","159 Kč",700,38,35,45,"","k",1,3,0],
- ["Chicken tikka masala, basmati rýže na másle, vídeňská cibulka","199 Kč",900,45,95,35,"","k",2,4,0]]],
-["Budvarka Zlín", "náměstí Práce 2523, Zlín", "https://www.menicka.cz/5881-budvarka-zlin.html", "Kuřecí steak caprese: hranolky vyměň za vařené brambory nebo salát.",[
- ["Kulajda","v menu",280,8,18,20,"s","z",0,0,0],
- ["Miska salátu dle denní nabídky (k menu)","35 Kč",80,2,8,4,"p","z",0,0,0],
- ["Sekaná pečeně, bramborová kaše, kyselá okurka (150 g)","179 Kč",850,35,55,48,"","v",0,1,0],
- ["Kuřecí steak caprese, hranolky, bylinková omáčka (150 g)","185 Kč",850,50,60,42,"b","k",2,2,0],
- ["Vepřový řízek, bramborová kaše, kyselá okurka (150 g)","175 Kč",950,40,70,55,"","v",1,3,0],
- ["Boloňské špagety sypané sýrem (300 g)","189 Kč",850,35,105,30,"","v",0,4,0],
- ["Bramborové noky s lososem a smetanovou omáčkou s listovým špenátem (300 g)","195 Kč",900,32,95,42,"","r",0,5,0]]],
-["U Ševce", "Kvítková 4323, Zlín", "https://www.menicka.cz/5492-u-sevce.html", "Kuřecí kapsa: šťouchané brambory sněz jen napůl, přidej zeleninu.",[
- ["Kulajda","v menu",280,8,18,20,"s","z",0,0,0],
- ["Lasagne bolognese se sýrovým bešamelem","139 Kč",850,38,70,45,"","v",0,1,0],
- ["Kuřecí řízek „naruby“, vařené brambory s jarní cibulkou","139 Kč",850,45,70,40,"","k",1,2,0],
- ["Kuřecí kapsa plněná špenátem a mozzarellou, šťouchané brambory","149 Kč",750,50,55,32,"b","k",0,3,0],
- ["Steak z vepřové krkovice na grilu s restovanými fazolkami, americké brambory","149 Kč",900,45,55,55,"","v",0,4,0],
- ["Telecí nudličky na hříbkách a slanině, rýže s cibulkou","159 Kč",800,42,80,32,"","h",0,5,0],
- ["Roastbeef and Bacon Wrap (tortilla s hovězím roastbeefem, slaninou, karamelizovanou cibulkou, cheddarem a dipem), hranolky","159 Kč",1200,50,100,65,"","h",2,6,0]]],
-["Radegastovna Rex", "Okružní 4701, Zlín", "https://www.menicka.cz/3538-radegastovna-rex.html", "Strapačky: sněz jich jen polovinu a přidej víc zelí.",[
- ["Slepičí vývar, celestýnské nudle, maso, zelenina","v menu",160,12,13,6,"s","k",0,0,0],
- ["Smažený holandský řízek se šťouchaným bramborem se slaninou","179 Kč",1050,40,75,65,"","v",1,1,0],
- ["Strapačky se zelím a uzeným masem, restovaná cibule","179 Kč",850,28,100,38,"b","v",0,2,0],
- ["Smažený květák s brambory grenaille a tatarskou omáčkou","189 Kč",850,18,80,50,"","z",1,3,0],
- ["Wrap s trhanou vepřovou krkovicí, coleslaw, sýr gouda, listové saláty, česnekový dresink, hranolky s tatarskou omáčkou","209 Kč",1300,45,120,70,"","v",2,4,0]]],
-["U Barcuchů (jídelna)", "Mokrá 5215, Zlín", "https://www.menicka.cz/3027-u-barcuchu.html", "Drůbeží játra: rýži sněz jen napůl. Z polévek je lehčí hovězí vývar.",[
- ["Hovězí vývar s masem, zeleninou a nudlemi","30 Kč",150,12,12,4,"s","h",0,0,0],
- ["Čočková","30 Kč",250,13,35,7,"s","z",0,0,0],
- ["Smažený kuřecí cordon bleu, vařené brambory, domácí tatarka","125 Kč",1000,45,70,60,"","k",1,1,0],
- ["Vídeňský hovězí guláš, houskové knedlíky","135 Kč",850,40,85,35,"","h",0,2,0],
- ["Drůbeží játra na cibulce, jasmínová rýže","119 Kč",700,38,75,25,"b","k",0,3,1],
- ["Bratislavská vepřová kýta, houskové knedlíky","119 Kč",850,40,90,35,"","v",0,4,0],
- ["Vepřové výpečky, dušené bílé zelí, houskový knedlík","119 Kč",1050,38,100,55,"","v",0,5,0],
- ["Šulánky s mákem a máslem","119 Kč",850,15,120,35,"","d",0,6,0],
- ["Minutka: vepřová játra na roštu, americké brambory, tatarka","170 Kč",800,42,55,45,"","v",0,8,1],
- ["Minutka: smažená tilápie, bramborový salát s majonézou","175 Kč",950,35,65,60,"","r",1,9,0],
- ["Minutka: smažený sýr se šunkou, hranolky, tatarka","175 Kč",1150,45,85,70,"","v",1,10,0],
- ["Minutka: smažený hermelín, hranolky, tatarka","175 Kč",1150,40,85,72,"","z",1,11,0],
- ["Minutka: knedlíky s vejci a špekem","140 Kč",950,30,100,48,"","v",0,12,0]]]]},
 {datum:"2026-11-23", den:"pondělí 23. 11. 2026", R:[
 ["Prostě Restaurace", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/8250-proste-restaurace.html", "Tarhoňové rizoto: sýra si dej méně a přiobjednej okurkový salát.",[
  ["Květáková / malý salátek (0,3 l)","35 Kč",170,6,18,8,"s","z",0,0,0],
@@ -295,9 +235,26 @@ var DNY=[
  ["Kuřecí medailonky s omáčkou z pečených paprik, bramborové krokety, salátek (150 g)","169 Kč",850,45,70,42,"","k",2,1,0],
  ["Smažený sýr (eidam), vařené brambory, tatarská omáčka (120 g)","169 Kč",950,35,70,58,"","z",1,2,0],
  ["Tarhoňové rizoto s kuřecím masem a zeleninou, sypané sýrem Grana Padano (300 g)","169 Kč",650,38,75,20,"b","k",0,3,0]]],
-["Pilsner Urquell Original Restaurant", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/2992-pilsner-urquell-original-restaurant.html", "",[]],
+["Pilsner Urquell Original Restaurant", "Vavrečkova 7074, Zlín", "https://www.menicka.cz/2992-pilsner-urquell-original-restaurant.html", "Hovězí nudličky: rýži sněz jen napůl a omáčky si dej méně.",[
+ ["Francouzská cibulačka se sýrovým krutonem","v menu",200,6,20,10,"s","z",0,0,0],
+ ["Hovězí nudličky na víně s rýží (150 g)","199 Kč",700,40,75,22,"b","h",0,1,0],
+ ["Vařená vejce (2 ks) s koprovou omáčkou a vařeným bramborem","169 Kč",650,25,70,30,"","z",0,2,0],
+ ["Kuřecí steak Caprese s bazalkovou omáčkou a hranolky (150 g)","185 Kč",850,50,60,42,"","k",2,3,0],
+ ["Spaghetti Alfredo (300 g)","175 Kč",900,28,100,42,"","z",0,4,0],
+ ["Čevapčiči s hořčicí, cibulí a vařeným bramborem (150 g)","175 Kč",800,38,60,45,"","v",0,5,0],
+ ["Lívance s borůvkovým přelivem a šlehačkou (4 ks)","165 Kč",850,18,120,32,"","d",0,6,0],
+ ["Vepřový řízek z kotlety naložený v česneku se šťouchanými brambory a okurkem (180 g)","189 Kč",950,40,70,55,"","v",1,7,0]]],
 ["Restaurace Flip (Bernard Pub)", "Gahurova 5265, Zlín", "https://www.menicka.cz/24-restaurace-flip-bernard-pub.html", "",[]],
-["Budvarka Zlín", "náměstí Práce 2523, Zlín", "https://www.menicka.cz/5881-budvarka-zlin.html", "",[]],
+["Budvarka Zlín", "náměstí Práce 2523, Zlín", "https://www.menicka.cz/5881-budvarka-zlin.html", "Kuřecí steak: kaši sněz jen napůl a omáčky si dej méně.",[
+ ["Zeleninová","v menu",150,5,18,6,"s","z",0,0,0],
+ ["Miska salátu dle denní nabídky (k menu)","35 Kč",80,2,8,4,"p","z",0,0,0],
+ ["Vídeňský hovězí plátek, rýže (150 g)","192 Kč",750,40,75,28,"","h",0,1,0],
+ ["Vepřová panenka, slaninová omáčka, hranolky (150 g)","191 Kč",950,42,65,55,"","v",2,2,0],
+ ["Kuřecí steak, houbová omáčka, bramborová kaše (150 g)","181 Kč",750,48,60,32,"b","k",0,3,0],
+ ["Čočka na kyselo, sázené vejce, klobáska, pečivo (300 g)","176 Kč",950,38,100,42,"","v",0,4,0],
+ ["Zeleninové karbanátky, vařený brambor, tatarka (200 g)","169 Kč",850,18,85,48,"","z",1,5,0],
+ ["Pečená křídla, coleslaw, pečivo, česnekový dip (300 g)","179 Kč",1100,55,60,70,"","k",0,6,0],
+ ["Smažený sýr, hranolky, tatarka (120 g)","189 Kč",1150,40,90,72,"","z",1,7,0]]],
 ["U Ševce", "Kvítková 4323, Zlín", "https://www.menicka.cz/5492-u-sevce.html", "Trhané hovězí: grenaille sněz jen napůl a přidej víc pečené zeleniny.",[
  ["Česneková s bramborem a krutóny","v menu",220,9,18,12,"s","z",0,0,0],
  ["Rizoto s masovou směsí a zeleninou sypané sýrem, okurek","139 Kč",850,38,95,32,"","v",0,1,0],
@@ -307,7 +264,21 @@ var DNY=[
  ["Farmářovo trhané hovězí maso s pečenou zeleninou, pečené grenaille na rozmarýnu","159 Kč",750,45,55,35,"b","h",0,5,0],
  ["Smažený kuřecí maxi řízek, hranolky, tatarská omáčka","159 Kč",1250,55,100,70,"","k",1,6,0]]],
 ["Radegastovna Rex", "Okružní 4701, Zlín", "https://www.menicka.cz/3538-radegastovna-rex.html", "",[]],
-["U Barcuchů (jídelna)", "Mokrá 5215, Zlín", "https://www.menicka.cz/3027-u-barcuchu.html", "",[]]]}
+["U Barcuchů (jídelna)", "Mokrá 5215, Zlín", "https://www.menicka.cz/3027-u-barcuchu.html", "Kuře pěti vůní: rýži sněz jen napůl. Z polévek je lehčí hovězí vývar.",[
+ ["Květáková","30 Kč",170,6,18,8,"s","z",0,0,0],
+ ["Hovězí vývar s masem, zeleninou a nudlemi","30 Kč",150,12,12,4,"s","h",0,0,0],
+ ["Hovězí kostky na pepři, jasmínová rýže / houskové knedlíky","139 Kč",800,45,80,28,"","h",0,1,0],
+ ["Smažený Gothaj v těstíčku, vařené brambory, domácí tatarka","129 Kč",1000,28,75,65,"","v",1,2,0],
+ ["Kuře pěti vůní (kuřecí kousky) s restovanou zeleninou, ananasem, jasmínová rýže","125 Kč",700,40,85,18,"b","k",0,3,0],
+ ["Vepřová plec, žampionová omáčka, houskové knedlíky","119 Kč",850,38,90,35,"","v",0,4,0],
+ ["Vařená vejce (2 ks), žampionová omáčka, vařené brambory","119 Kč",650,22,70,30,"","z",0,5,0],
+ ["Vepřové výpečky, dušené bílé zelí, houskový knedlík","119 Kč",1050,38,100,55,"","v",0,6,0],
+ ["Minutka: kuřecí řízek „Ondráš“ v bramboráku","170 Kč",1100,45,75,68,"","k",1,8,0],
+ ["Minutka: vepřová játra na roštu, americké brambory, tatarka","170 Kč",800,42,55,45,"","v",0,9,1],
+ ["Minutka: smažená tilápie, bramborový salát s majonézou","175 Kč",950,35,65,60,"","r",1,10,0],
+ ["Minutka: smažený sýr se šunkou, hranolky, tatarka","175 Kč",1150,45,85,70,"","v",1,11,0],
+ ["Minutka: smažený hermelín, hranolky, tatarka","175 Kč",1150,40,85,72,"","z",1,12,0],
+ ["Minutka: knedlíky s vejci a špekem","140 Kč",950,30,100,48,"","v",0,13,0]]]]}
 ];
 // ===== DATA:END =====
 
